@@ -42,6 +42,10 @@ socket.on('game-types', function(_game_types) {
   }
 });
 
+socket.on('join-game', function(id) {
+  window.location.href = 'game.html#'+id;
+});
+
 $( function() {
   $('#new-game').click(function(){
     $('#create-game').slideDown();
