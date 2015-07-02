@@ -1,0 +1,60 @@
+#lobby {
+  padding: 30px;
+}
+
+#lobby .game {
+  position: relative;
+  display: inline-block;
+  border: 1px solid black;
+  height: 64px;
+  width: 256px;
+  cursor: pointer;
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 3px 6px;
+}
+
+#lobby .game:hover {
+  background: #dfd;
+}
+
+#lobby .game .img {
+  width: 64px;
+  height: 64px;
+  background: black;
+  float: left;
+}
+
+#lobby .game .title {
+  padding: 3px;
+  padding-left: 8px;
+  margin: 0;
+  font-size: 1.2em;
+  width: 172px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+#lobby .game .players {
+  display: inline-block;
+  width: 172px;
+  height: 26px;
+  padding: 3px 7px;
+  font-size: 0.8em;
+  overflow: hidden;
+}
+
+#user-data {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 2px 5px;
+}
+
+.fullscreen {
+  display: none;
+  position: fixed;
+  padding: 20px;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: white;
+}
