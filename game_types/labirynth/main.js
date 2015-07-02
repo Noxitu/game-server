@@ -1,30 +1,31 @@
 
+module.exports = {};
 
-module.exports = {
+module.exports.info = {
   title: "Labirynt",
-  logo: "logo.jpg",
+  logo: "labirynth.jpg",
   players: 2,
   settings: [
     {
       name: 'width',
-      title: 'Szerokoœæ',
+      label: 'SzerokoÅ›Ä‡',
       value: 'int'
     },
     {
       name: 'height',
-      title: 'Wysokoœæ',
+      label: 'WysokoÅ›Ä‡',
       value: 'int'
     },
     {
       name: 'walls',
-      title: 'Œcian',
+      label: 'Åšcian',
       value: 'int'
     },
     {
       name: 'end-when',
-      title: 'Koniec gry',
+      label: 'Koniec gry',
       options: ['winner', 'loser'],
-      options_titles: ['Wygrany zakoñczy grê', 'Przegrany zakoñczy grê']
+      options_labels: ['Wygrany zakoÅ„czy grÄ™', 'Przegrany zakoÅ„czy grÄ™']
     }
   ]
 }

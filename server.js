@@ -17,5 +17,6 @@ server.listen(port, function () {
 });
 
 module.exports = {
-  io: io
+  io: io,
+  app: app
 };

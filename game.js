@@ -8,11 +8,12 @@ function gid() {
   });
 }
 
-function Game() {
+function Game(data) {
   do {
     this.id = gid();
   } while( this.id in games );
-  this.type = 'tic-tac-toe';
+  this.type = data.id;
+  this.settings = data;
   this.status = 'setting up';
   this.players = [null, null];
   this.preRoom = 'pregame:'+this.id;

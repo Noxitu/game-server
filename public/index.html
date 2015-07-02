@@ -17,11 +17,11 @@
       
       <h2>Gry zakończone</h2>
       <ul id="games-finished">
-        <li class="game">
-          <img class="img" src="labirynth.jpg">
+        <!--<li class="game">
+          <img class="img" src="/game:labirynth/labirynth.jpg">
           <h4 class="title">Labirynt</h3>
           <span class="players"><span>Grzesiu</span> <span>Andrzej</span></span>
-        </li>
+        </li>-->
       </ul>
       
     </div>
@@ -30,6 +30,7 @@
     <div id="user-data">
       Nie zalogowany.
     </div>
+    
     <form id="login-box" class="fullscreen">
       <label for="username">Nazwa użytkownika</label>
       <input type="text" name="username" value="Grzesiu">
@@ -40,7 +41,11 @@
     </form>
     
     <form id="create-game" class="fullscreen">
-       <label for="type">Wybierz grę </label><select name="type"></select>
+       <label for="id">Wybierz grę: </label><select name="id"></select>
+       <h4>Ustawienia</h4>
+       <div class="settings">
+       </div>
+       <input type="submit" value="Stwórz grę"> <button class="cancel">Anuluj</button>
     </form>
   
     <script src="js/jquery-2.0.2.min.js"></script>

@@ -9,7 +9,11 @@ $(function(){
 });
 
 function displayLoginBox() {
-    $('#login-box').slideDown();
+  if( $('#login-box').length == 0 ) {
+    window.location.href = '/';
+    return;
+  }
+  $('#login-box').slideDown();
 }
 
 socket.on('login-ok', function(data) {
