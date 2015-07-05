@@ -25,11 +25,17 @@ socket.on('lobby-games', function(data) {
         .attr('data-game-id', game.id)
         .append('<img class="img" src="/game:'+game.type+'/'+game_types[game.type].logo+'">')
         .append('<h4 class="title">'+game_types[game.type].title+'</h3>')
-        .append(players_e);
+        .append(players_e)
+        .click(joinGame);
     }
       
   }
 });
+
+function joinGame() {
+  var id = $(this).attr('data-game-id');
+  window.location.href = '/game.html#'+id;
+}
 
 var game_types = {};
 socket.on('game-types', function(_game_types) {
@@ -43,7 +49,7 @@ socket.on('game-types', function(_game_types) {
 });
 
 socket.on('join-game', function(id) {
-  window.location.href = 'game.html#'+id;
+  window.location.href = '/game.html#'+id;
 });
 
 $( function() {

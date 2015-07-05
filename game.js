@@ -8,15 +8,16 @@ function gid() {
   });
 }
 
-function Game(data) {
+function Game(data, owner) {
   do {
     this.id = gid();
   } while( this.id in games );
   this.type = data.id;
+  this.owner = owner;
   this.settings = data;
   this.status = 'setting up';
   this.players = [null, null];
-  this.preRoom = 'pregame:'+this.id;
+  this.pregameRoom = 'pregame:'+this.id;
   
   games[this.id] = this;
 }
@@ -30,9 +31,9 @@ Game.prototype.serializeToLobby = function() {
   };
 };
 
-Game.prototype.serializeToDetails = function() {
+Game.prototype.serializeToPregame = function() {
   return {
-    id: this.id
+    players: this.players.map( function(u) { return u ? u.username : null; } )
   };
 }
 

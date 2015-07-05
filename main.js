@@ -20,6 +20,7 @@ function newid(func, collection) {
 var io = require('./server.js').io;
 
 var LobbyConnection = require('./lobby-connection.js').LobbyConnection;
+var PregameConnection = require('./pregame-connection.js').PregameConnection;
 
 
 io.on('connection', function (socket) {
@@ -47,6 +48,9 @@ io.on('connection', function (socket) {
     switch(data.join) {
       case 'lobby':
         LobbyConnection(socket, user);
+        break;
+      case 'pregame':
+        PregameConnection(socket, user, data.id);
         break;
     }
     socket.removeListener( 'join', onJoin );

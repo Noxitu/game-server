@@ -23,7 +23,7 @@ function LobbyConnection(socket, user) {
       }
     }
   
-    var game = new game_module.Game(data);
+    var game = new game_module.Game(data, user);
     io.to('lobby').emit('lobby-games', [game.serializeToLobby()] );
     socket.emit('join-game', game.id);
     socket.disconnect();
