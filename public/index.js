@@ -4,7 +4,6 @@ socket.on('authed', function() { socket.emit('join', {join: 'lobby'}); });
 var games = {};
 
 socket.on('lobby-games', function(data) {
-  console.log(data);
   for( var i = 0; i < data.length; i++ ) {
     var game = data[i];
     games[game.id] = game;
@@ -15,10 +14,7 @@ socket.on('lobby-games', function(data) {
       $('#games-open').append(game_e);
       var players_e = $('<span class="players"></span>');
       for( var j = 0; j < game.players.length; j++ ) {
-        if( game.players[j] )
-          players_e.append('<span>'+game.players[j]+'</span> ');
-        else
-          players_e.append('<span>-</span> ');
+        players_e.append('<span data-i="'+j+'">-</span> ');
       }
       game_e
         .addClass('game')
@@ -28,13 +24,30 @@ socket.on('lobby-games', function(data) {
         .append(players_e)
         .click(joinGame);
     }
-      
+    
+    for( var j = 0; j < game.players.length; j++ ) {
+      game_e.find('.players span[data-i="'+j+'"]').text(game.players[j] ? game.players[j] : '-');
+    }
+    
+    var place;
+    alert(game.status);
+    switch( game.status ) {
+      case 'setting up':
+        place = '#games-open';
+        break;
+      case 'ended':
+        place = '#games-finished';
+        break;
+      default:
+        place = '#games-ongoing';
+    }
+    if( game_e.closest(place).length == 0 )
+      $(place).append(game_e);    
   }
 });
 
 function joinGame() {
-  var id = $(this).attr('data-game-id');
-  window.location.href = '/game.html#'+id;
+  socket.emit('join-game', $(this).attr('data-game-id') );
 }
 
 var game_types = {};
@@ -46,10 +59,6 @@ socket.on('game-types', function(_game_types) {
     var type = game_types[types[i]];
     $('#create-game select[name="id"]').append('<option value="'+type.id+'">'+type.title+'</option>');
   }
-});
-
-socket.on('join-game', function(id) {
-  window.location.href = '/game.html#'+id;
 });
 
 $( function() {

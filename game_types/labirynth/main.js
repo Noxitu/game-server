@@ -1,5 +1,6 @@
 
-module.exports = {};
+module.exports = {
+};
 
 module.exports.info = {
   title: "Labirynt",

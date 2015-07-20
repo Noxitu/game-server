@@ -62,3 +62,24 @@
 #create-game .settings {
   padding: 0 20px 20px;
 }
+
+#pregame #players .free-seat {
+  width: 80px;
+  border: 1px solid black;
+  padding: 3px 9px;
+  margin: 2px;
+}
+
+#pregame #players:not(.seated) .free-seat {
+  text-decoration: underline;
+  text-weight: bold;
+  cursor: pointer;
+}
+
+#pregame #players.seated .free-seat {
+  text-decoration: line-through;
+}
+
+#pregame #players:not(.seated) .free-seat:hover {
+  background: #dfd;
+}

@@ -21,7 +21,7 @@ var io = require('./server.js').io;
 
 var LobbyConnection = require('./lobby-connection.js').LobbyConnection;
 var PregameConnection = require('./pregame-connection.js').PregameConnection;
-
+var game_module = require('./game.js');
 
 io.on('connection', function (socket) {
   var user = null;
@@ -49,9 +49,17 @@ io.on('connection', function (socket) {
       case 'lobby':
         LobbyConnection(socket, user);
         break;
-      case 'pregame':
-        PregameConnection(socket, user, data.id);
-        break;
+        
+      case 'game':
+        if( ! (data.id in game_module.games) ) {
+          socket.emit('redirect', '/');
+          break;
+        }
+        var game = game_module.games[data.id];
+        if( game.status == 'setting up' )
+          PregameConnection(socket, user, game);
+        else
+          game.game_type().Connection(socket, user, game);
     }
     socket.removeListener( 'join', onJoin );
   }
