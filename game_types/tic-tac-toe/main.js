@@ -57,10 +57,11 @@ function Connection(socket, user, game) {
         io.to(game.room()).emit('update', game.logic.map);
         
         var win = game.logic.checkWin();
-        if( win ) {
+        if( win || game.logic.map.indexOf(' ') == -1 )
             game.changeStatus('ended');
+            
+        if( win )
             io.to(game.room()).emit('win', win.pos );
-        }
     }
 
     socket.emit('update', game.logic.map);

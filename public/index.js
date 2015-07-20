@@ -30,7 +30,6 @@ socket.on('lobby-games', function(data) {
     }
     
     var place;
-    alert(game.status);
     switch( game.status ) {
       case 'setting up':
         place = '#games-open';
