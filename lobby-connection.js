@@ -1,9 +1,8 @@
 
 var io = require('./server.js').io;
-var io_index_room = io.to('index');
 
 function LobbyConnection(socket, user, game) {
-    var io_game_room = io.to(game.room());
+    var game_room = game.room(), user_room = game.room_for_user(user);
     
     function gameHasStarted() {
         if( game.status != 'lobby' ) {
@@ -13,7 +12,7 @@ function LobbyConnection(socket, user, game) {
         return false;
     }
     
-    var Rooms = [game.room()];
+    var Rooms = [game_room, user_room];
     var Events = {
         'Lobby.sit': function onSit(i) {
             if( gameHasStarted() )
@@ -26,10 +25,10 @@ function LobbyConnection(socket, user, game) {
                 return;
                 
             game.players[i] = user;
-            socket.emit('Lobby.setIsSeated', true);
+            io.to(user_room).emit('Lobby.setIsSeated', true);
             
             io.to('index').emit('Index.update', [game.serializeToLobby()] );
-            io.to(game.room()).emit('Lobby.update', game.serializeToPregame() );
+            io.to(game_room).emit('Lobby.update', game.serializeToPregame() );
         },
         'Lobby.stand': function onStand() {
             if( gameHasStarted() )
@@ -40,10 +39,10 @@ function LobbyConnection(socket, user, game) {
                 return;
                 
             game.players[i] = null;
-            socket.emit('Lobby.setIsSeated', false);
+            io.to(user_room).emit('Lobby.setIsSeated', false);
             
             io.to('index').emit('Index.update', [game.serializeToLobby()] );
-            io.to(game.room()).emit('Lobby.update', game.serializeToPregame() );
+            io.to(game_room).emit('Lobby.update', game.serializeToPregame() );
         },
         'Lobby.startGame': function() {
             if( gameHasStarted() )
@@ -54,7 +53,7 @@ function LobbyConnection(socket, user, game) {
                 
             //game.logic = new (game.game_type().Logic)(game);
             game.changeStatus('ongoing');
-            io.to(game.room()).emit('Room.join', game.id );
+            io.to(game_room).emit('Room.join', game.id );
         }
     };
     

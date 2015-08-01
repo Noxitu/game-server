@@ -363,8 +363,10 @@ var Audio = {
     },
     init_state: function() {
         $('[data-no-autoplay]').removeAttr('data-no-autoplay');
-        Audio.enabled = localStorage.getItem('the-game audio-enabled') == 'true';
-        if( Audio.enabled === null )
+        var stored = localStorage.getItem('the-game audio-enabled');
+        if( stored == 'true' || stored === null )
+            Audio.enabled = true;
+        else
             Audio.enabled = true;
             
         Audio.updateIcon();

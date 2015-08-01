@@ -77,6 +77,7 @@ Game.prototype.serializeToPregame = function() {
 }
 
 Game.prototype.room = function() { return 'game:'+this.id; }
+Game.prototype.room_for_user = function(user) { return 'game:'+this.id+':user:'+user.id; }
 Game.prototype.game_type = function() { return game_types[this.type]; }
 
 Game.prototype.changeStatus = function(status) {

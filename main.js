@@ -10,6 +10,13 @@ function uuid() {
     });
 }
 
+function user_id() {
+    return 'xxxx-xxxx-xxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+        return v.toString(16);
+    });
+}
+
 function newid(func, collection) {
     var id;
     do {
@@ -49,7 +56,10 @@ io.on('connection', function (socket) {
         if( data.username in users )
             user = users[data.username];
         else
-            user = users[data.username] = { username: data.username };
+            user = users[data.username] = { 
+                id: new_id( user_id, users ),
+                username: data.username
+            };
             
         var sessionId = newid( uuid, sessions );
         
