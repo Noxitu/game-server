@@ -19,8 +19,8 @@ function newid(func, collection) {
 
 var io = require('./server.js').io;
 
+var IndexConnection = require('./index-connection.js').IndexConnection;
 var LobbyConnection = require('./lobby-connection.js').LobbyConnection;
-var PregameConnection = require('./pregame-connection.js').PregameConnection;
 var game_module = require('./game.js');
 
 io.on('connection', function (socket) {
@@ -60,8 +60,8 @@ io.on('connection', function (socket) {
             
         if( data.id === undefined ) {
             socket.emit('Room.load', {});
-            destroyConnection = LobbyConnection(socket, user);
-            socket.emit('Room.set', 'lobby');
+            destroyConnection = IndexConnection(socket, user);
+            socket.emit('Room.set', 'index');
         } else {
             socket.emit('Toast.show', {
                 message: 'Not implemented.',

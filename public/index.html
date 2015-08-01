@@ -19,13 +19,13 @@
       <nav role="navigation">
         <div class="nav-wrapper container"><a id="logo-container" class="brand-logo" href="/">The-Game</a>
           <ul class="right">
-            <li class="hide-on-med-and-down" data-loged="true"><a data-action="lobby"><i class="material-icons left">games</i>Poczekalnia</a></li>
+            <li class="hide-on-med-and-down" data-loged="true"><a data-action="index"><i class="material-icons left">view_list</i> Indeks</a></li>
             <li class="hide-on-med-and-down" data-loged="true"><a class="dropdown-button" data-activates="dropdown1"><i class="material-icons left">perm_identity</i><span data-bind="username"></span></a></li>
             <li data-require-autoplay><a data-action="Audio.switchState"><i data-volume-state class="material-icons">volume_up</i></a></li>
           </ul>
 
           <ul id="nav-mobile" class="side-nav">
-            <li data-loged="true"><a data-action="lobby"><i class="material-icons left">games</i> Poczekalnia</a></li>
+            <li data-loged="true"><a data-action="index"><i class="material-icons left">view_list</i> Indeks</a></li>
             <li data-loged="true"><a data-action="logout"><i class="material-icons left">power_settings_new</i>Wyloguj: <span data-bind="username"></span></a></li>
           </ul>
           <a data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
@@ -74,26 +74,8 @@
 
     </main>
     
-    <main id="lobby" class="container">
+    <main id="index" class="container">
       <div data-game-list class="collection">
-        <a class="collection-item avatar">
-          <img src="../game_types/tic-tac-toe/public/tic-tac-toe.png" alt="" class="circle">
-          <b class="title">Kółko i krzyżyk</b>
-          <p>- -</p>
-          <i class="material-icons secondary-content">play_arrow</i>
-        </a>
-        <a class="collection-item avatar">
-          <img src="../game_types/labirynth/public/labirynth.jpg" alt="" class="circle">
-          <b class="title">Labirynt</b>
-          <p>Grzesiu Andrzej</p>
-          <i class="material-icons secondary-content">done</i>
-        </a>
-        <a class="collection-item avatar">
-          <img src="../game_types/the-great-escape/public/logo.jpg" alt="" class="circle">
-          <b class="title">The Great Escape</b>
-          <p>Grzesiu -</p>
-          <i class="material-icons secondary-content"></i>
-        </a>
       </div>
       
       <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
@@ -137,10 +119,9 @@
     </main>
     
     <div data-templates>
-      <a data-template="lobby-game" class="collection-item avatar">
-        <img src="../game_types/the-great-escape/public/logo.jpg" alt="" class="circle">
-        <b class="title">The Great Escape</b>
-        <p>Grzesiu -</p>
+      <a data-template="index-game" class="collection-item avatar">
+        <img src="" alt="" class="circle">
+        <b class="title">
         <i class="material-icons secondary-content"></i>
       </a>
     </div>

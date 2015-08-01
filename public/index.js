@@ -118,23 +118,23 @@ var Room = {
         if( data.id ) {
             return;
         } else {
-            Room.currentHandler = Lobby;
+            Room.currentHandler = Index;
         }
             
         Room.currentHandler.init();
         addListeners(Room.currentHandler.events);
     },
-    showLobby() {
+    showIndex() {
         var room = Room.get();
-        if( room == 'loading' || room == 'lobby' )
+        if( room == 'loading' || room == 'index' )
             return;
         if( room == 'create-game' )
-            Room.set('lobby');
+            Room.set('index');
         else
             Room.join();
     },
     init: function() {
-        $('[data-action="lobby"]').click( Room.showLobby );
+        $('[data-action="index"]').click( Room.showIndex );
         $('[data-show]').click(function() { Room.set(this.dataset.show); return false; });
         window.onhashchange = Room.hashUpdated;
         
@@ -144,7 +144,7 @@ var Room = {
     }
 };
 
-var Lobby = {
+var Index = {
     appendSelect: function(element, name, label, values, labels) {
         var div_e = $('<div class="input-field"></div>');
         var select_e = $('<select name="'+name+'"></select>');
@@ -157,7 +157,7 @@ var Lobby = {
         select_e.material_select();
     },
     createGameTypeChanged: function() {
-        var game_type = Lobby.game_types[$(this).val()];
+        var game_type = Index.game_types[$(this).val()];
         var element = $('main#create-game .settings');
         element.children().remove();
         
@@ -169,13 +169,13 @@ var Lobby = {
         $('main#create-game [data-action="submit"]').attr('disabled', null);
         
         if( game_type.players.length !== undefined ) {
-            Lobby.appendSelect(element, 'players_count', 'Liczba graczy', game_type.players, game_type.players);
+            Index.appendSelect(element, 'players_count', 'Liczba graczy', game_type.players, game_type.players);
         }
         
         for( var i = 0; i < game_type.settings.length; i++ ) {
             var setting = game_type.settings[i];
             if( 'options' in setting ) {
-                Lobby.appendSelect(element, setting.name, setting.label, setting.options, setting.options_labels);
+                Index.appendSelect(element, setting.name, setting.label, setting.options, setting.options_labels);
             } else {
                 var label_attrs = '', input_attrs = '';
                 if( setting.value_ex && setting.value_ex['default'] ) {
@@ -190,7 +190,7 @@ var Lobby = {
     },
     createGame: function() {
         Room.set('loading');
-        socket.emit('Lobby.createGame', $(this).serialize());
+        socket.emit('Index.createGame', $(this).serialize());
         return false;
     },
     joinGame: function() {
@@ -201,8 +201,8 @@ var Lobby = {
         return true;
     },
     events: {
-        'Lobby.game_types': function(game_types) {
-            Lobby.game_types = game_types;
+        'Index.game_types': function(game_types) {
+            Index.game_types = game_types;
             $('main#create-game select[name="id"] option:not([disabled])').remove();
             $('main#create-game select[name="id"]').change();
             
@@ -214,27 +214,27 @@ var Lobby = {
             $('main#create-game select[name="id"]').material_select();
             $('main#create-game select[name="id"]').closest('.input-field').children('.caret').remove();
         },
-        'Lobby.update': function(data) {
+        'Index.update': function(data) {
             for( var i = 0; i < data.length; i++ ) {
                 var game = data[i];
                 
-                var game_e = $('main#lobby [data-game-list] > [data-game-id="'+game.id+'"]');
+                var game_e = $('main#index [data-game-list] > [data-game-id="'+game.id+'"]');
                 if( game_e.length == 0 ) {
-                    game_e = $('[data-templates] [data-template="lobby-game"]').clone();
-                    $('main#lobby [data-game-list]').prepend( game_e );
+                    game_e = $('[data-templates] [data-template="index-game"]').clone();
+                    $('main#index [data-game-list]').prepend( game_e );
                     game_e.attr('data-game-id', game.id);
-                    game_e.click(Lobby.joinGame);
+                    game_e.click(Index.joinGame);
                 }
                     
-                game_e.find('img').attr('src', '/game_types/'+game.type+'/'+Lobby.game_types[game.type].logo);
-                game_e.find('.title').text( Lobby.game_types[game.type].title );
+                game_e.find('img').attr('src', '/game_types/'+game.type+'/'+Index.game_types[game.type].logo);
+                game_e.find('.title').text( Index.game_types[game.type].title );
                 var player_list = '';
                 for( var j = 0; j < game.players.length; j++ ) {
                     player_list += (game.players[j] ? game.players[j] : '-') + ' ';
                 }
                 game_e.find('p').text( player_list );
                 switch(game.status) {
-                    case 'setting up':
+                    case 'lobby':
                         game_e.find('i').text('');
                         break;
                     case 'ended':
@@ -247,11 +247,11 @@ var Lobby = {
         }
     },
     init_global: function() {
-        $('main#create-game select[name="id"]').change(Lobby.createGameTypeChanged);
-        $('main#create-game form').submit(Lobby.createGame);
+        $('main#create-game select[name="id"]').change(Index.createGameTypeChanged);
+        $('main#create-game form').submit(Index.createGame);
     },
     init: function() {
-        $('main#lobby [data-game-list] *').remove();
+        $('main#index [data-game-list] *').remove();
     },
 };
 
@@ -317,6 +317,6 @@ $(function() {
     Room.init();     
     Toast.init();
     UI.init();
-    Lobby.init_global();
+    Index.init_global();
     Audio.init();
 });

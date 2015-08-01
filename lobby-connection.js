@@ -1,47 +1,81 @@
 
 var io = require('./server.js').io;
-var game_module = require('./game.js');
-var game_types_info = require('./game_types.js').game_types_info;
-var querystring = require('querystring');
 
-function LobbyConnection(socket, user) {
-    var Rooms = ['lobby'];
-    var Events = {
-        'Lobby.createGame': function(data) {
-            var settings = querystring.parse(data);
-            var error = game_module.verify_settings(settings);
-            if( error ) {
-                socket.emit('Toast.show', {
-                    message: error,
-                    type: 'error'
-                });
-                socket.emit('Room.set', 'create-game');
-                return;
-            }
-                
-            var game = new game_module.Game(settings, user);
-            io.to('lobby').emit('Lobby.update', [game.serializeToLobby()] );
-            socket.emit('Room.join', game.id );
+function PregameConnection(socket, user, game) {
+    if( game.status != 'setting up' ) {
+        socket.emit('redirect', game.getHref() );
+        socket.disconnect();
+        return;
+    }
+    
+    function onSit(i) {
+        if( game.status != 'setting up' ) {
+            socket.emit('redirect', game.getHref() );
+            socket.disconnect();
+            return;
         }
-    };
+        
+        if( game.players.indexOf(user) != -1 )
+            return;
+            
+        if( game.players[i] !== null )
+            return;
+            
+        game.players[i] = user;
+        socket.emit('seated', true);
+        
+        io.to('lobby').emit('lobby-games', [game.serializeToLobby()] );
+        io.to(game.room()).emit('game', game.serializeToPregame() );
+    } 
+    
+    function onStand() {
+        if( game.status != 'setting up' ) {
+            socket.emit('redirect', game.getHref() );
+            socket.disconnect();
+            return;
+        }
+        
+        var i = game.players.indexOf(user);
+        if( i == -1 )
+            return;
+            
+        game.players[i] = null;
+        socket.emit('seated', false);
+        
+        io.to('lobby').emit('lobby-games', [game.serializeToLobby()] );
+        io.to(game.room()).emit('game', game.serializeToPregame() );
+    } 
     
     
-    socket.emit('Lobby.game_types', game_types_info);
-    socket.emit('Lobby.update', Object.keys(game_module.games).map( function(id) { return game_module.games[id].serializeToLobby(); } ));
+    function onStartGame() {
+        if( game.status != 'setting up' ) {
+            socket.emit('redirect', game.getHref() );
+            return;
+        }
     
-    for( var i in Rooms )
-        socket.join(Rooms[i]);
-    for( var e in Events )
-        socket.on(e, Events[e]);
+        if( user !== game.owner || game.players.indexOf(null) != -1 )
+            return;
+            
+        game.logic = new (game.game_type().Logic)(game);
+        game.changeStatus('going on');
+        io.to(game.room()).emit('redirect', game.getHref() );
+        
+    }
     
-    return function() {
-        for( var i in Rooms )
-            socket.leave(Rooms[i]);
-        for( var e in Events )
-            socket.removeListener(e, Events[e]);
-    };
+    
+    socket.emit('game-type', game.game_type().info );
+    socket.emit('settings', game.settings );
+    socket.emit('owner', game.owner === user );
+    socket.emit('seated', game.players.indexOf(user) != -1 );
+    socket.emit('game', game.serializeToPregame() );
+    
+    socket.join(game.room());
+    
+    socket.on('sit', onSit);
+    socket.on('stand', onStand);
+    socket.on('start-game', onStartGame);
 }
 
 module.exports = {
-    LobbyConnection: LobbyConnection
+    PregameConnection: PregameConnection
 };
