@@ -1,5 +1,6 @@
 
 // sessions
+var users = {};
 var sessions = {};
 
 function uuid() {
@@ -44,8 +45,12 @@ io.on('connection', function (socket) {
             socket.emit('Login.showForm');
             return;
         }
-                
-        user = { username: data.username };
+           
+        if( data.username in users )
+            user = users[data.username];
+        else
+            user = users[data.username] = { username: data.username };
+            
         var sessionId = newid( uuid, sessions );
         
         socket.emit('Login.storeSessionId', {sessionId: sessionId});
@@ -56,19 +61,37 @@ io.on('connection', function (socket) {
     var destroyConnection;
     function onJoin(data) {
         if( destroyConnection )
-        destroyConnection();
+            destroyConnection();
             
         if( data.id === undefined ) {
             socket.emit('Room.load', {});
             destroyConnection = IndexConnection(socket, user);
             socket.emit('Room.set', 'index');
-        } else {
+            return;
+        }
+        
+        if( ! (data.id in game_module.games) ) {
             socket.emit('Toast.show', {
-                message: 'Not implemented.',
+                message: 'Game not found',
                 type: 'warning'
             });
             socket.emit('Room.join');
+            return;
         }
+        
+        var game = game_module.games[data.id];
+        if( game.status == 'lobby' ) {
+            socket.emit('Room.load', {id: game.id});
+            destroyConnection = LobbyConnection(socket, user, game);
+            socket.emit('Room.set', 'lobby');
+        } else {
+            socket.emit('Toast.show', {
+                message: 'Not implemented',
+                type: 'error'
+            });           
+            socket.emit('Room.join');
+        }
+            
         /*switch(data.join) {
             case 'lobby':
                 LobbyConnection(socket, user);
@@ -103,7 +126,7 @@ io.on('connection', function (socket) {
     
     socket.on('error', function(e) {
         socket.emit('Toast.show', {
-            message: 'socketerrror='+JSON.stringify(e),
+            message: 'socketerrror='+e.stack,
             type: 'error'
         });
     });

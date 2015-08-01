@@ -1,81 +1,84 @@
 
 var io = require('./server.js').io;
+var io_index_room = io.to('index');
 
-function PregameConnection(socket, user, game) {
-    if( game.status != 'setting up' ) {
-        socket.emit('redirect', game.getHref() );
-        socket.disconnect();
-        return;
+function LobbyConnection(socket, user, game) {
+    var io_game_room = io.to(game.room());
+    
+    function gameHasStarted() {
+        if( game.status != 'lobby' ) {
+            socket.emit('join', game.id);
+            return true;
+        }
+        return false;
     }
     
-    function onSit(i) {
-        if( game.status != 'setting up' ) {
-            socket.emit('redirect', game.getHref() );
-            socket.disconnect();
-            return;
+    var Rooms = [game.room()];
+    var Events = {
+        'Lobby.sit': function onSit(i) {
+            if( gameHasStarted() )
+                return;
+            
+            if( game.players.indexOf(user) != -1 )
+                return;
+                
+            if( game.players[i] !== null )
+                return;
+                
+            game.players[i] = user;
+            socket.emit('Lobby.setIsSeated', true);
+            
+            io.to('index').emit('Index.update', [game.serializeToLobby()] );
+            io.to(game.room()).emit('Lobby.update', game.serializeToPregame() );
+        },
+        'Lobby.stand': function onStand() {
+            if( gameHasStarted() )
+                return;
+            
+            var i = game.players.indexOf(user);
+            if( i == -1 )
+                return;
+                
+            game.players[i] = null;
+            socket.emit('Lobby.setIsSeated', false);
+            
+            io.to('index').emit('Index.update', [game.serializeToLobby()] );
+            io.to(game.room()).emit('Lobby.update', game.serializeToPregame() );
+        },
+        'Lobby.startGame': function() {
+            if( gameHasStarted() )
+                return;
+        
+            if( user !== game.owner || game.players.indexOf(null) != -1 )
+                return;
+                
+            //game.logic = new (game.game_type().Logic)(game);
+            game.changeStatus('ongoing');
+            io.to(game.room()).emit('Room.join', game.id );
         }
-        
-        if( game.players.indexOf(user) != -1 )
-            return;
-            
-        if( game.players[i] !== null )
-            return;
-            
-        game.players[i] = user;
-        socket.emit('seated', true);
-        
-        io.to('lobby').emit('lobby-games', [game.serializeToLobby()] );
-        io.to(game.room()).emit('game', game.serializeToPregame() );
-    } 
-    
-    function onStand() {
-        if( game.status != 'setting up' ) {
-            socket.emit('redirect', game.getHref() );
-            socket.disconnect();
-            return;
-        }
-        
-        var i = game.players.indexOf(user);
-        if( i == -1 )
-            return;
-            
-        game.players[i] = null;
-        socket.emit('seated', false);
-        
-        io.to('lobby').emit('lobby-games', [game.serializeToLobby()] );
-        io.to(game.room()).emit('game', game.serializeToPregame() );
-    } 
+    };
     
     
-    function onStartGame() {
-        if( game.status != 'setting up' ) {
-            socket.emit('redirect', game.getHref() );
-            return;
-        }
+    socket.emit('Lobby.setGameTypeInfo', game.game_type().info );
+    socket.emit('Lobby.setSettings', game.settings );
+    // Warning, order of emits is important: owner -> player_list(update) -> seated
+    socket.emit('Lobby.setIsOwner', game.owner === user );
+    socket.emit('Lobby.update', game.serializeToPregame() );
+    socket.emit('Lobby.setIsSeated', game.players.indexOf(user) != -1 );
     
-        if( user !== game.owner || game.players.indexOf(null) != -1 )
-            return;
-            
-        game.logic = new (game.game_type().Logic)(game);
-        game.changeStatus('going on');
-        io.to(game.room()).emit('redirect', game.getHref() );
-        
-    }
+    for( var i in Rooms )
+        socket.join(Rooms[i]);
+    for( var e in Events )
+        socket.on(e, Events[e]);
     
-    
-    socket.emit('game-type', game.game_type().info );
-    socket.emit('settings', game.settings );
-    socket.emit('owner', game.owner === user );
-    socket.emit('seated', game.players.indexOf(user) != -1 );
-    socket.emit('game', game.serializeToPregame() );
-    
-    socket.join(game.room());
-    
-    socket.on('sit', onSit);
-    socket.on('stand', onStand);
-    socket.on('start-game', onStartGame);
+    return function() {
+        for( var i in Rooms )
+            socket.leave(Rooms[i]);
+        for( var e in Events )
+            socket.removeListener(e, Events[e]);
+    };
 }
 
 module.exports = {
-    PregameConnection: PregameConnection
+    LobbyConnection: LobbyConnection
 };

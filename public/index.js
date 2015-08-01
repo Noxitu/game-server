@@ -38,7 +38,7 @@ var Login = {
         
         return false;
     },
-    onLogout: function() {
+    logout: function() {
         localStorage.removeItem('the-game session-id');
         document.location.reload();
         return false;
@@ -71,8 +71,8 @@ var Login = {
             
         addListeners(Login.events);
         
-        $('[data-action="logout"]').click( Login.onLogout );
-        $('[data-submit="login"]').submit( Login.auth );
+        $('[data-action="Login.logout"]').click( Login.logout );
+        $('[data-submit="Login.auth"]').submit( Login.auth );
     },
 };
 
@@ -116,7 +116,7 @@ var Room = {
             removeListeners(Room.currentHandler.events);
             
         if( data.id ) {
-            return;
+            Room.currentHandler = Lobby;
         } else {
             Room.currentHandler = Index;
         }
@@ -134,7 +134,7 @@ var Room = {
             Room.join();
     },
     init: function() {
-        $('[data-action="index"]').click( Room.showIndex );
+        $('[data-action="Room.showIndex"]').click( Room.showIndex );
         $('[data-show]').click(function() { Room.set(this.dataset.show); return false; });
         window.onhashchange = Room.hashUpdated;
         
@@ -215,8 +215,9 @@ var Index = {
             $('main#create-game select[name="id"]').closest('.input-field').children('.caret').remove();
         },
         'Index.update': function(data) {
+            window.games = data;
             for( var i = 0; i < data.length; i++ ) {
-                var game = data[i];
+                var game = data[i]; 
                 
                 var game_e = $('main#index [data-game-list] > [data-game-id="'+game.id+'"]');
                 if( game_e.length == 0 ) {
@@ -248,14 +249,97 @@ var Index = {
     },
     init_global: function() {
         $('main#create-game select[name="id"]').change(Index.createGameTypeChanged);
-        $('main#create-game form').submit(Index.createGame);
+        $('[data-submit="Index.createGame"]').submit(Index.createGame);
     },
     init: function() {
         $('main#index [data-game-list] *').remove();
     },
 };
 
+var Lobby = {
+    sit: function() {
+        var i = $(this).closest('[data-lobby-player-i]').attr('data-lobby-player-i')|0;
+        socket.emit('Lobby.sit', i );
+        return false;
+    },
+    stand: function() { 
+        socket.emit('Lobby.stand');
+        return false;
+    },
+    startGame: function() { 
+        socket.emit('Lobby.startGame');
+        return false;
+    },
+    events: {
+        'Lobby.setGameTypeInfo': function(game_type) {
+            Lobby.game_type = game_type;
+            $('main#lobby [data-bind="lobby-game-type"]').text(game_type.title);
+        },
+        'Lobby.setSettings': function(settings) {
+            for( var i = 0; i < Lobby.game_type.settings.length; i++ ) {
+                var setting = Lobby.game_type.settings[i];
+                var name = setting.label;
+                var value;
+                if( 'options' in setting ) {
+                    var pos = setting.options.indexOf(settings[setting.name]);
+                    value = setting.options_labels[pos];
+                } else if( setting.value == 'int' ) {
+                    value = settings[setting.name];
+                }
+                $('main#lobby table[data-bind="lobby-settings"]').append('<tr><td>' + name + '</td><td>' + value + '</td></tr>');
+            }
+        },
+        'Lobby.setIsOwner': function(value) {
+            Lobby.isOwner = value;
+        },
+        'Lobby.setIsSeated': function(value) {
+            $('main#lobby [data-action="Lobby.stand"]').toggleClass('disabled', !value );
+            $('main#lobby .sit-here-btn').toggleClass('disabled', value );
+        },
+        'Lobby.update': function(game) {
+            $('main#lobby [data-bind="lobby-player-count"]').text(game.players.length);
+            var playerSlots = $('main#lobby [data-bind="lobby-player-list"] tbody tr');
+            
+            if( playerSlots.length == 0 ) {
+                console.log(game.players.length);
+                for( var i = 0; i < game.players.length; i++ )
+                    $('main#lobby [data-bind="lobby-player-list"] tbody').append('<tr data-lobby-player-i="'+i+'"><td><span data-bind="lobby-player-name"></span></tr>');
+                playerSlots = $('main#lobby [data-bind="lobby-player-list"] tbody tr');
+                playerSlots.find('td').each( function(){ 
+                    var e = $('[data-templates] [data-template="lobby-sit-here"]').clone();
+                    e.click(Lobby.sit);
+                    $(this).append(e);
+                });
+            }
+            
+            for( var i = 0; i < game.players.length; i++ ) {
+                if( game.players[i] === null ) {
+                    playerSlots.eq(i).find('.sit-here-btn').show();
+                    playerSlots.eq(i).find('span[data-bind="lobby-player-name"]').text('');
+                } else {
+                    playerSlots.eq(i).find('.sit-here-btn').hide();
+                    playerSlots.eq(i).find('span[data-bind="lobby-player-name"]').text(game.players[i]);
+                }
+            }
+            
+            if( Lobby.isOwner && game.players.indexOf(null) == -1 ) 
+                $('main#lobby [data-action="Lobby.startGame"]').removeClass('disabled');
+            else
+                $('main#lobby [data-action="Lobby.startGame"]').addClass('disabled');
+        }
+    },
+    init_global: function() {
+        $('main#lobby [data-action="Lobby.startGame"]').click(Lobby.startGame);
+        $('main#lobby [data-action="Lobby.stand"]').click(Lobby.stand);
+    },
+    init: function() {
+        $('main#lobby [data-bind="lobby-settings"] tbody tr:not([data-permanent])').remove();
+        $('main#lobby [data-bind="lobby-player-list"] tbody tr').remove();
+    },
+};
+
 var Audio = {
+    enabled: false,
     notify: function() {
         if( Audio.enabled ) {
             Audio.notifyElement.currentTime = 0;
@@ -271,23 +355,33 @@ var Audio = {
     updateIcon: function() {
         $('i[data-volume-state]').text(Audio.enabled ? 'volume_up' : 'volume_off');
     },
-    init: function() {
-        if( !window.AUTOPLAY_ENABLED ) {
-            function onAutoplayEnabled() {
-                window.removeEventListener('autoplayenabled', onAutoplayEnabled, false);
-                Audio.init();
-                return false;
-            }
-            window.addEventListener('autoplayenabled', onAutoplayEnabled, false);
-            return;
-        }
-        $('[data-require-autoplay]').removeAttr('data-require-autoplay');
+    mobileEnableAudio: function() {
+        Audio.switchState();
+        Audio.notifyElement.play();
+        Audio.notifyElement.pause();
+        Audio.init_state(); 
+    },
+    init_state: function() {
+        $('[data-no-autoplay]').removeAttr('data-no-autoplay');
         Audio.enabled = localStorage.getItem('the-game audio-enabled') == 'true';
         if( Audio.enabled === null )
             Audio.enabled = true;
             
         Audio.updateIcon();
+    },
+    init: function() {
+        if( !window.AUTOPLAY_ENABLED ) {
+            function onAutoplayEnabled() {
+                window.removeEventListener('autoplayenabled', onAutoplayEnabled, false);
+                Audio.init_state();
+                return false;
+            }
+            window.addEventListener('autoplayenabled', onAutoplayEnabled, false);
+        } else
+            Audio.init_state();
+            
         $('[data-action="Audio.switchState"]').click(Audio.switchState);
+        $('[data-action="Audio.mobileEnableAudio"]').click(Audio.mobileEnableAudio);
         $('body').append('<audio id="Audio-notify" hidden preload="auto"> <source src="sound/notify.mp3" type="audio/mpeg"> <source src="sound/notify.wav" type="audio/wav"> </audio>');
         Audio.notifyElement = $('#Audio-notify')[0];
     }
@@ -318,5 +412,6 @@ $(function() {
     Toast.init();
     UI.init();
     Index.init_global();
+    Lobby.init_global();
     Audio.init();
 });

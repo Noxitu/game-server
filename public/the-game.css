@@ -32,7 +32,8 @@ body > main:not(#loading) {
   display: none;
 }
 
-[data-require-autoplay] {
+[data-require-autoplay][data-no-autoplay],
+[data-require-no-autoplay]:not([data-no-autoplay]) {
   display: none;
 }
 

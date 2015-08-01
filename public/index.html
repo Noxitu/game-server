@@ -13,20 +13,21 @@
   <body> 
     <div class="navbar-fixed">
       <ul id="dropdown1" class="dropdown-content">
-        <li><a data-action="logout">Wyloguj</a></li>
+        <li><a data-action="Login.logout">Wyloguj</a></li>
       </ul>
       
       <nav role="navigation">
         <div class="nav-wrapper container"><a id="logo-container" class="brand-logo" href="/">The-Game</a>
           <ul class="right">
-            <li class="hide-on-med-and-down" data-loged="true"><a data-action="index"><i class="material-icons left">view_list</i> Indeks</a></li>
+            <li class="hide-on-med-and-down" data-loged="true"><a data-action="Room.showIndex"><i class="material-icons left">view_list</i> Indeks</a></li>
             <li class="hide-on-med-and-down" data-loged="true"><a class="dropdown-button" data-activates="dropdown1"><i class="material-icons left">perm_identity</i><span data-bind="username"></span></a></li>
-            <li data-require-autoplay><a data-action="Audio.switchState"><i data-volume-state class="material-icons">volume_up</i></a></li>
+            <li data-no-autoplay data-require-autoplay><a data-action="Audio.switchState"><i data-volume-state class="material-icons">volume_up</i></a></li>
+            <li data-no-autoplay data-require-no-autoplay><a data-action="Audio.mobileEnableAudio"><i data-volume-state class="material-icons">volume_off</i></a></li>
           </ul>
 
           <ul id="nav-mobile" class="side-nav">
-            <li data-loged="true"><a data-action="index"><i class="material-icons left">view_list</i> Indeks</a></li>
-            <li data-loged="true"><a data-action="logout"><i class="material-icons left">power_settings_new</i>Wyloguj: <span data-bind="username"></span></a></li>
+            <li data-loged="true"><a data-action="Room.showIndex"><i class="material-icons left">view_list</i> Indeks</a></li>
+            <li data-loged="true"><a data-action="Login.logout"><i class="material-icons left">power_settings_new</i>Wyloguj: <span data-bind="username"></span></a></li>
           </ul>
           <a data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
         </div>
@@ -51,7 +52,7 @@
     </main>
     
     <main id="login" class="container">
-       <form method="post" class="container" data-submit="login">
+       <form method="post" class="container" data-submit="Login.auth">
         <div class="row">
           <div class="input-field">
             <input type="text" name="login" class="validate">
@@ -84,7 +85,7 @@
     </main>
     
     <main id="create-game" class="container">
-      <form>
+      <form data-submit="Index.createGame">
         <div class="input-field">
           <select name="id">
             <option value="" disabled selected>Wybierz typ gry</option>
@@ -103,27 +104,31 @@
       </form>  
     </main>
     
-    <main id="pregame" class="container">
+    <main id="lobby" class="container">
       <h4 class="red-text text-lighten-1">Gracze</h4>
-      <ul data-bind="pregame-player-list">
-      </ul>
+      <table data-bind="lobby-player-list"><tbody></tbody></table>
       
       <h4 class="red-text text-lighten-1">Ustawienia</h4>
-      <ul data-bind="pregame-settings">
-        <li data-permanent>Gra: <span data-bind="pregame-game-type"></span></li>
-        <li data-permanent>Liczba graczy: <span data-bind="pregame-player-count"></span></li>
-      </ul>
+      <table data-bind="lobby-settings">
+        <tbody>
+          <tr data-permanent><td>Gra</td> <td data-bind="lobby-game-type"></td></tr>
+          <tr data-permanent><td>Liczba graczy</td>  <td data-bind="lobby-player-count"></td></tr>
+        </tbody>
+      </table>
       
-      <a id="start-game" class="waves-effect waves-light btn-large" data-action="submit" disabled>Zacznij grę</a>
-      <a id="stand-up" class="waves-effect waves-light btn-large red lighten-2" disabled>Wstań</a>
+      <a class="waves-effect waves-light btn-large" data-action="Lobby.startGame" disabled>Zacznij grę</a>
+      <a class="waves-effect waves-light btn-large red lighten-2" data-action="Lobby.stand" disabled>Wstań</a>
     </main>
     
     <div data-templates>
       <a data-template="index-game" class="collection-item avatar">
         <img src="" alt="" class="circle">
-        <b class="title">
+        <b class="title"></b>
+        <p></p>
         <i class="material-icons secondary-content"></i>
       </a>
+      
+      <a data-template="lobby-sit-here" class="btn waves-effect waves-light sit-here-btn"><i class="material-icons left">call_received</i>Usiądź tu</a>
     </div>
    
     <footer class="red lighten-2 page-footer">
