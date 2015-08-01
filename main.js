@@ -57,7 +57,7 @@ io.on('connection', function (socket) {
             user = users[data.username];
         else
             user = users[data.username] = { 
-                id: new_id( user_id, users ),
+                id: newid( user_id, users ),
                 username: data.username
             };
             
