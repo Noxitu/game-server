@@ -367,7 +367,7 @@ var Audio = {
         if( stored == 'true' || stored === null )
             Audio.enabled = true;
         else
-            Audio.enabled = true;
+            Audio.enabled = false;
             
         Audio.updateIcon();
     },
