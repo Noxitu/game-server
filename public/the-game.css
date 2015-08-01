@@ -1,85 +1,50 @@
-.content {
-  padding: 30px;
+@media screen and (max-width: 600px) {
+    #nav-mobile i.material-icons {
+        display: none;
+    }
+    
+    nav .nav-wrapper i {
+      height: 64px;
+      line-height: 64px;
+    }
 }
 
-#lobby .game {
-  position: relative;
-  display: inline-block;
-  border: 1px solid black;
-  height: 64px;
-  width: 256px;
+body {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+main {
+  flex: 1 0 auto;
+  padding: 3em 0;
+}
+
+a {
   cursor: pointer;
-  border-radius: 4px;
-  overflow: hidden;
-  margin: 3px 6px;
 }
 
-#lobby .game:hover {
-  background: #dfd;
-}
-
-#lobby .game .img {
-  width: 64px;
-  height: 64px;
-  background: black;
-  float: left;
-}
-
-#lobby .game .title {
-  padding: 3px;
-  padding-left: 8px;
-  margin: 0;
-  font-size: 1.2em;
-  width: 172px;
-  overflow: hidden;
-  white-space: nowrap;
-}
-
-#lobby .game .players {
-  display: inline-block;
-  width: 172px;
-  height: 26px;
-  padding: 3px 7px;
-  font-size: 0.8em;
-  overflow: hidden;
-}
-
-#user-data {
-  position: absolute;
-  top: 0;
-  left: 0;
-  padding: 2px 5px;
-}
-
-.fullscreen {
+[data-loged="true"] {
   display: none;
-  position: fixed;
-  padding: 20px;
-  top: 0; left: 0; bottom: 0; right: 0;
-  background: white;
 }
 
-#create-game .settings {
-  padding: 0 20px 20px;
+body > main:not(#loading) {
+  display: none;
 }
 
-#pregame #players .free-seat {
-  width: 80px;
-  border: 1px solid black;
-  padding: 3px 9px;
-  margin: 2px;
+[data-require-autoplay] {
+  display: none;
 }
 
-#pregame #players:not(.seated) .free-seat {
-  text-decoration: underline;
-  text-weight: bold;
-  cursor: pointer;
+[data-templates] {
+  display: none;
 }
 
-#pregame #players.seated .free-seat {
-  text-decoration: line-through;
-}
-
-#pregame #players:not(.seated) .free-seat:hover {
-  background: #dfd;
+i.material-icons {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }

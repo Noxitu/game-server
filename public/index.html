@@ -1,52 +1,163 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
   <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    
     <link rel="icon" href="favicon.ico">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="lib/materialize/css/materialize.min.css"  media="screen,projection"/>
     <link rel="stylesheet" href="the-game.css">
     <title>The Game</title>
   </head>
-  <body>
-    <div id="lobby" class="content">
-      <button id="new-game">Nowa Gra</button>
-      
-      <h2>Gry otwarte</h2>
-      <ul id="games-open"></ul>
-      
-      <h2>Gry w trakcie</h2>
-      <ul id="games-ongoing"></ul>
-      
-      <h2>Gry zakończone</h2>
-      <ul id="games-finished">
+  <body> 
+    <div class="navbar-fixed">
+      <ul id="dropdown1" class="dropdown-content">
+        <li><a data-action="logout">Wyloguj</a></li>
       </ul>
       
-    </div>
-    
-    
-    <div id="user-data">
-      Nie zalogowany.
-    </div>
-    
-    <form id="login-box" class="fullscreen">
-      <label for="username">Nazwa użytkownika</label>
-      <input type="text" name="username" value="Grzesiu">
-      <br>
+      <nav role="navigation">
+        <div class="nav-wrapper container"><a id="logo-container" class="brand-logo" href="/">The-Game</a>
+          <ul class="right">
+            <li class="hide-on-med-and-down" data-loged="true"><a data-action="lobby"><i class="material-icons left">games</i>Poczekalnia</a></li>
+            <li class="hide-on-med-and-down" data-loged="true"><a class="dropdown-button" data-activates="dropdown1"><i class="material-icons left">perm_identity</i><span data-bind="username"></span></a></li>
+            <li data-require-autoplay><a data-action="Audio.switchState"><i data-volume-state class="material-icons">volume_up</i></a></li>
+          </ul>
 
-      <input type="hidden" name="password" value="********">
-      <input type="submit" value="Zaloguj">
-    </form>
+          <ul id="nav-mobile" class="side-nav">
+            <li data-loged="true"><a data-action="lobby"><i class="material-icons left">games</i> Poczekalnia</a></li>
+            <li data-loged="true"><a data-action="logout"><i class="material-icons left">power_settings_new</i>Wyloguj: <span data-bind="username"></span></a></li>
+          </ul>
+          <a data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
+        </div>
+        
+      </nav>
+    </div>
     
-    <form id="create-game" class="fullscreen">
-       <label for="id">Wybierz grę: </label><select name="id"></select>
-       <h4>Ustawienia</h4>
+    <main id="loading" class="container valign-wrapper">
+      <div class="container center-align valign">
+      <div class="preloader-wrapper big active">
+        <div class="spinner-layer spinner-red-only">
+          <div class="circle-clipper left">
+            <div class="circle"></div>
+          </div><div class="gap-patch">
+            <div class="circle"></div>
+          </div><div class="circle-clipper right">
+            <div class="circle"></div>
+          </div>
+        </div>
+      </div>
+      </div>
+    </main>
+    
+    <main id="login" class="container">
+       <form method="post" class="container" data-submit="login">
+        <div class="row">
+          <div class="input-field">
+            <input type="text" name="login" class="validate">
+            <label for="login">Login</label>
+          </div>
+        </div>
+       
+        <!--<div class="row">
+          <div class="input-field">
+            <input type="password" name="password" class="validate">
+            <label for="password">Hasło</label>
+          </div>
+        </div>-->
+        
+        <div class="row">
+          <a class="waves-effect waves-light btn-large" data-action="submit">Zaloguj</a> 
+          <!--<a class="waves-effect waves-light btn-large light-blue lighten-2" data-action="register">Zarejestruj</a>-->
+        </div>
+      </form>
+
+    </main>
+    
+    <main id="lobby" class="container">
+      <div data-game-list class="collection">
+        <a class="collection-item avatar">
+          <img src="../game_types/tic-tac-toe/public/tic-tac-toe.png" alt="" class="circle">
+          <b class="title">Kółko i krzyżyk</b>
+          <p>- -</p>
+          <i class="material-icons secondary-content">play_arrow</i>
+        </a>
+        <a class="collection-item avatar">
+          <img src="../game_types/labirynth/public/labirynth.jpg" alt="" class="circle">
+          <b class="title">Labirynt</b>
+          <p>Grzesiu Andrzej</p>
+          <i class="material-icons secondary-content">done</i>
+        </a>
+        <a class="collection-item avatar">
+          <img src="../game_types/the-great-escape/public/logo.jpg" alt="" class="circle">
+          <b class="title">The Great Escape</b>
+          <p>Grzesiu -</p>
+          <i class="material-icons secondary-content"></i>
+        </a>
+      </div>
+      
+      <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
+        <a class="btn-floating btn-large waves-effect waves-light z-depth-4" data-show="create-game"><i class="material-icons">add</i></a>
+      </div>  
+    </main>
+    
+    <main id="create-game" class="container">
+      <form>
+        <div class="input-field">
+          <select name="id">
+            <option value="" disabled selected>Wybierz typ gry</option>
+          </select>
+          <label>Typ gry</label>
+        </div>
+       
+       
+       <h4 class="red-text text-lighten-1">Ustawienia</h4>
        <div class="settings">
        </div>
-       <input type="submit" value="Stwórz grę"> <button class="cancel">Anuluj</button>
-    </form>
-  
+       <div class="row">
+          <button class="waves-effect waves-light btn-large" data-action="submit">Stwórz grę</button> 
+          <button class="waves-effect waves-light btn-large red lighten-2" data-show="lobby">Anuluj</button>
+        </div>
+      </form>  
+    </main>
+    
+    <main id="pregame" class="container">
+      <h4 class="red-text text-lighten-1">Gracze</h4>
+      <ul data-bind="pregame-player-list">
+      </ul>
+      
+      <h4 class="red-text text-lighten-1">Ustawienia</h4>
+      <ul data-bind="pregame-settings">
+        <li data-permanent>Gra: <span data-bind="pregame-game-type"></span></li>
+        <li data-permanent>Liczba graczy: <span data-bind="pregame-player-count"></span></li>
+      </ul>
+      
+      <a id="start-game" class="waves-effect waves-light btn-large" data-action="submit" disabled>Zacznij grę</a>
+      <a id="stand-up" class="waves-effect waves-light btn-large red lighten-2" disabled>Wstań</a>
+    </main>
+    
+    <div data-templates>
+      <a data-template="lobby-game" class="collection-item avatar">
+        <img src="../game_types/the-great-escape/public/logo.jpg" alt="" class="circle">
+        <b class="title">The Great Escape</b>
+        <p>Grzesiu -</p>
+        <i class="material-icons secondary-content"></i>
+      </a>
+    </div>
+   
+    <footer class="red lighten-2 page-footer">
+      <div class="footer-copyright">
+        <div class="container">
+        © 2015 Grzesiu
+        <a class="grey-text text-lighten-4 right" href="https://github.com/Noxitu/game-server">Github</a>
+        </div>
+      </div>
+    </footer>
+    
     <script src="js/jquery-2.0.2.min.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="/auth.js"></script>
-    <script src="/index.js"></script>
+    <script src="js/detect-autoplay.js"></script>
+    <script type="text/javascript" src="lib/materialize/js/materialize.min.js"></script>
+    <script src="socket.io/socket.io.js"></script>
+    <script src="index.js"></script>
   </body>
 </html>

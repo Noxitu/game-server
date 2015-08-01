@@ -4,6 +4,7 @@ var io = require('../../server.js').io;
 var info = {
     title: "Kółko i krzyżyk",
     logo: "tic-tac-toe.png",
+    players: 2,
     settings: [
         {
             name: 'first',

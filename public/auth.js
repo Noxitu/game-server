@@ -1,6 +1,14 @@
 var socket = io();
 
 $(function(){
+    $('body').append('<form id="login-box" class="fullscreen">'+
+                        '<label for="username">Nazwa użytkownika</label>'+
+                        '<input type="text" name="username" value="Grzesiu">'+
+                        '<br>'+
+                        '<input type="hidden" name="password" value="********">'+
+                        '<input type="submit" value="Zaloguj">'+
+                        '</form>');
+                        
     $('#login-box').submit(function(){
         var username = $('#login-box input[name="username"]').val();
         socket.emit('login', {username: username});
@@ -30,7 +38,6 @@ socket.on('authed', function(data) {
 
 var sessionId = localStorage.getItem('the-game session-id');
 if( sessionId ){ 
-    socket.emit('session-id', sessionId);
     socket.emit('session-id', sessionId);
 } else
     displayLoginBox();

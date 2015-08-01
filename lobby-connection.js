@@ -5,43 +5,41 @@ var game_types_info = require('./game_types.js').game_types_info;
 var querystring = require('querystring');
 
 function LobbyConnection(socket, user) {
-
-    function onLobbyGameCreate(data) {
-        var settings = querystring.parse(data);
-        var game_type_info = game_types_info[settings.id];
-        
-        for( var i = 0; i < game_type_info.settings.length; i++ ) {
-            var setting = game_type_info.settings[i];
-            if( ! setting.name in settings )
+    var Rooms = ['lobby'];
+    var Events = {
+        'Lobby.createGame': function(data) {
+            var settings = querystring.parse(data);
+            var error = game_module.verify_settings(settings);
+            if( error ) {
+                socket.emit('Toast.show', {
+                    message: error,
+                    type: 'error'
+                });
+                socket.emit('Room.set', 'create-game');
                 return;
-            if( 'options' in setting ) {
-                if( ! settings[setting.name] in setting.options )
-                    return;
-            } else if( setting.value == 'int' ) {
-                if( isNaN(settings[setting.name]) )
-                    return;
             }
+                
+            var game = new game_module.Game(settings, user);
+            io.to('lobby').emit('Lobby.update', [game.serializeToLobby()] );
+            socket.emit('Room.join', game.id );
         }
+    };
     
-        var game = new game_module.Game(settings, user);
-        io.to('lobby').emit('lobby-games', [game.serializeToLobby()] );
-        socket.emit('redirect', game.getHref() );
-        socket.disconnect();
-    }
     
-    function onJoinGame(id) {
-        if( ! id in game_module.games )
-            return;
-        socket.emit('redirect', game_module.games[id].getHref() );
-    }
+    socket.emit('Lobby.game_types', game_types_info);
+    socket.emit('Lobby.update', Object.keys(game_module.games).map( function(id) { return game_module.games[id].serializeToLobby(); } ));
     
-    socket.emit('game-types', game_types_info);
-    socket.emit('lobby-games', Object.keys(game_module.games).map( function(id) { return game_module.games[id].serializeToLobby(); } ));
+    for( var i in Rooms )
+        socket.join(Rooms[i]);
+    for( var e in Events )
+        socket.on(e, Events[e]);
     
-    socket.join('lobby');
-    
-    socket.on('create-game', onLobbyGameCreate );
-    socket.on('join-game', onJoinGame );
+    return function() {
+        for( var i in Rooms )
+            socket.leave(Rooms[i]);
+        for( var e in Events )
+            socket.removeListener(e, Events[e]);
+    };
 }
 
 module.exports = {
