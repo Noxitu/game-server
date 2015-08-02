@@ -29,7 +29,7 @@ main#game .box[data-box-id="2"], main#game .box[data-box-id="5"], main#game .box
 [data-boxes][data-win="3"] .box[data-box-id="0"], [data-boxes][data-win="3"] .box[data-box-id="3"], [data-boxes][data-win="3"] .box[data-box-id="6"], 
 [data-boxes][data-win="4"] .box[data-box-id="1"], [data-boxes][data-win="4"] .box[data-box-id="4"], [data-boxes][data-win="4"] .box[data-box-id="7"], 
 [data-boxes][data-win="5"] .box[data-box-id="2"], [data-boxes][data-win="5"] .box[data-box-id="5"], [data-boxes][data-win="5"] .box[data-box-id="8"], 
-[data-boxes][data-win="6"] .box[data-box-id="0"], [data-boxes][data-win="6"] .box[data-box-id="4"], [data-boxes][data-win="6"] .box[data-box-id="6"], 
-[data-boxes][data-win="7"] .box[data-box-id="2"], [data-boxes][data-win="7"] .box[data-box-id="4"], [data-boxes][data-win="7"] .box[data-box-id="7"] {
+[data-boxes][data-win="6"] .box[data-box-id="0"], [data-boxes][data-win="6"] .box[data-box-id="4"], [data-boxes][data-win="6"] .box[data-box-id="8"], 
+[data-boxes][data-win="7"] .box[data-box-id="2"], [data-boxes][data-win="7"] .box[data-box-id="4"], [data-boxes][data-win="7"] .box[data-box-id="6"] {
   background-color: lime;
 }

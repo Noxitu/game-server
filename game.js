@@ -77,12 +77,16 @@ Game.prototype.serializeToPregame = function() {
 }
 
 Game.prototype.room = function() { return 'game:'+this.id; }
-Game.prototype.room_for_user = function(user) { return 'game:'+this.id+':user:'+user.id; }
 Game.prototype.game_type = function() { return game_types[this.type]; }
 
 Game.prototype.changeStatus = function(status) {
     this.status = status;
     io.to('index').emit('Index.update', [this.serializeToLobby()] );
+}
+
+Game.prototype.end = function() {
+    this.changeStatus('ended');
+    io.to(this.room()).emit('Game.ended');
 }
 
 module.exports = {

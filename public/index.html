@@ -99,7 +99,7 @@
        </div>
        <div class="row">
           <button class="waves-effect waves-light btn-large" data-action="submit">Stwórz grę</button> 
-          <button class="waves-effect waves-light btn-large red lighten-2" data-show="lobby">Anuluj</button>
+          <button class="waves-effect waves-light btn-large red lighten-2" data-show="index">Anuluj</button>
         </div>
       </form>  
     </main>
@@ -133,6 +133,18 @@
       </a>
       
       <a data-template="lobby-sit-here" class="btn waves-effect waves-light sit-here-btn"><i class="material-icons left">call_received</i>Usiądź tu</a>
+      
+      <div data-template="game-turn-info" class="game-turn-info row">
+        <div class="col l6 m8 s10 offset-l3 offset-m2 offset-s1">
+          <div class="card-panel red lighten-2 white-text">
+            <i class="material-icons left">access_time</i> <span>Ruch wykonuje: <b></b></span>
+          </div>
+        </div>
+      </div>
+      
+      <div data-template="postgame-rematch" class="fixed-action-btn" style="bottom: 45px; right: 24px;">
+        <a class="postgame-rematch-btn btn-floating btn-large waves-effect waves-light z-depth-4"><i class="material-icons">autorenew</i></a>
+      </div>  
     </div>
    
     <footer class="red lighten-2 page-footer">

@@ -121,8 +121,10 @@ io.on('connection', function (socket) {
     
     socket.on('error', function(e) {
         socket.emit('Toast.show', {
-            message: 'socketerrror='+e.stack,
-            type: 'error'
+            message: 'Server side exception',
+            type: 'error',
+            notify: true,
+            more: e.stack
         });
     });
 });

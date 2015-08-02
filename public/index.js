@@ -5,13 +5,15 @@ var Debug = {
 };
 
 function addListeners(events) {
-    for( var e in events )
+    for( var e in events ) {
         socket.on(e, events[e]);
+    }
 }
 
 function removeListeners(events) {
-    for( var e in events )
+    for( var e in events ) {
         socket.removeListener(e, events[e]);
+    }
 }
 
 var Toast = {
@@ -21,7 +23,10 @@ var Toast = {
         if( data.type == 'info' )
             data.type = 'info_outline';
         Materialize.toast('<i class="material-icons '+color+'-text text-lighten-1 left">'+data.type+'</i>'+data.message, 3000);
-        Audio.notify();
+        if( data.notify === true )
+            Audio.notify();
+        if( 'more' in data )
+            console.log(data.more);
     },
     init: function() {
         socket.on('Toast.show', Toast.show );
@@ -112,7 +117,7 @@ var Room = {
     load: function(data) {
         Room.set('loading');
         
-        if( Room.handler ) {
+        if( Room.currentHandler ) {
             removeListeners(Room.currentHandler.events);
             Room.currentHandler.deinit();
         }
@@ -125,6 +130,7 @@ var Room = {
                     $('main#game').html(html);
                 });
                 Room.currentHandler = Game;
+                addListeners(Room.currentHandler.events);
                 return;
             } else
                 Room.currentHandler = Lobby;
@@ -402,7 +408,60 @@ var Audio = {
 };
 
 var Game = {
+    rematch: function() {
+        if( Room.get() == 'loading' )
+            return;
+        
+        if( Game.rematch_id ) {
+            Room.join(Game.rematch_id);
+        } else {
+            Room.set('loading');
+            socket.emit('Game.rematch');
+        }
+    },
     events: {
+        'Game.setTurn': function(name) {
+            if( name === undefined ) {
+                $('main#game .game-turn-info').remove();
+                return;
+            }
+            var e = $('main#game .game-turn-info');
+            if( e.length == 0 ) {
+                e = $('[data-templates] [data-template="game-turn-info"]').clone();
+                $('main#game').prepend(e);
+            }
+            e.find('.card-panel')
+                .removeClass('teal')
+                .addClass('red')
+                .find('b')
+                    .text(name);
+        },
+        'Game.yourTurn': function() {
+            Audio.notify();
+            $('main#game .game-turn-info .card-panel')
+                .removeClass('red')
+                .addClass('teal');
+        },
+        'Game.ended': function() {
+            var e = $('[data-templates] [data-template="postgame-rematch"]').clone();
+            $('main#game').append(e);
+            e.click(Game.rematch);
+            Game.rematch_id = undefined;
+            Toast.show({
+                message: 'Gra zakończona',
+                type: 'info'
+            });
+        },
+        'Game.rematch': function(data) {
+            $('main#game .postgame-rematch-btn ').addClass('light-blue');
+            Game.rematch_id = data.id;
+            if( 'who' in data )
+                Toast.show({
+                    message: 'Gracz '+data.who+' zaproponował rewanż.',
+                    type: 'info',
+                    notify: true
+                });
+        },
     },
     init: function(internal) {
         if( Room.currentHandler != Game )
@@ -411,7 +470,6 @@ var Game = {
         Game.internal = internal;
         
         Game.internal.init();
-        addListeners(Game.events);
         addListeners(Game.internal.events);
         socket.emit('Game.init');
     },

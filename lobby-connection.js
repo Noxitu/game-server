@@ -2,7 +2,7 @@
 var io = require('./server.js').io;
 
 function LobbyConnection(socket, user, game) {
-    var game_room = game.room(), user_room = game.room_for_user(user);
+    var game_room = game.room(), user_room = game_room + ':user:'+user.id;
     
     function gameHasStarted() {
         if( game.status != 'lobby' ) {

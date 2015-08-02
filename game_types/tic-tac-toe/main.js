@@ -42,19 +42,19 @@ Logic.prototype.checkWin = function() {
 
 
 function Connection(socket, user, game) {
-    var game_room = game.room();
-    
-    function gameIsOngoing() {
-        return game.status == 'ongoing';
+    var game_room = game.room(), player_room = game_room + ':player:' + game.players.indexOf(user);
+    var player_i = game.players.indexOf(user);
+    function hasEnded() {
+        return game.status == 'ended';
     }
     
-    var Rooms = [game_room];
+    var Rooms = [game_room, player_room];
     var Events = {
         'TicTacToe.click': function(pos) {
-            if( !gameIsOngoing() )
+            if( hasEnded() )
                 return;
         
-            if( game.logic.turn != game.players.indexOf(user) )
+            if( user != game.players[game.logic.turn] )
                 return;
             
             if( game.logic.map[pos] != ' ' )
@@ -66,8 +66,13 @@ function Connection(socket, user, game) {
             io.to(game_room).emit('TicTacToe.update', game.logic.map);
             
             var win = game.logic.checkWin();
-            if( win || game.logic.map.indexOf(' ') == -1 )
-                game.changeStatus('ended');
+            if( win || game.logic.map.indexOf(' ') == -1 ) {
+                game.end();
+                io.to(game_room).emit('Game.setTurn');
+            } else {
+                io.to(game_room).emit('Game.setTurn', game.players[game.logic.turn].username );
+                io.to(game_room + ':player:' + game.logic.turn).emit('Game.yourTurn');
+            }
                 
             if( win )
                 io.to(game_room).emit('TicTacToe.win', win.pos );
@@ -75,9 +80,23 @@ function Connection(socket, user, game) {
     };
     
     socket.emit('TicTacToe.update', game.logic.map);
+    
+    if( hasEnded() ) {
+        socket.emit('Game.setTurn');
+    } else {
+        socket.emit('Game.setTurn', game.players[game.logic.turn].username );   
+        if( user == game.players[game.logic.turn] )
+            socket.emit('Game.yourTurn');
+    }
+    
     var win = game.logic.checkWin();
-    if( win )
+    if( win ) {
+        socket.emit('Turn.set', game.players[game.logic.turn].username );
         socket.emit('TicTacToe.win', win.pos );
+    } else {
+        
+        
+    }
         
     return {
         Rooms: Rooms,
