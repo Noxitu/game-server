@@ -75,8 +75,6 @@ var Login = {
             Login.events['Login.showForm']();
         }
             
-        console.log(Login.events['Login.showForm']);
-            
         addListeners(Login.events);
         
         $('[data-action="Login.logout"]').click( Login.logout );
