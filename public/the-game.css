@@ -61,6 +61,10 @@ i.material-icons {
   -webkit-animation: spin-btn 2s ease-in-out infinite;
 }
 
+main#disconnected {
+  cursor: pointer;
+}
+
 main#disconnected i {
   font-size: 30vmin;
 }

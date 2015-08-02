@@ -1,0 +1,33 @@
+
+main#game [data-jankenpon-buttons] img {
+  height: 15vmin;
+  cursor: pointer;
+}
+
+main#game [data-jankenpon-picks] img {
+  height: 30vmin;
+  opacity: 0;
+}
+
+main#game table {
+  table-layout: fixed;
+}
+
+main#game table img {
+  height: 10vmin;
+}
+
+main#game table th, main#game table td {
+  padding: 1px 10px;
+}
+
+main#game table th:first-child, main#game table td:first-child {
+  text-align: right;
+}
+
+main#game [data-jankenpon-buttons] img {
+  transition: 0.3s;
+}
+main#game [data-jankenpon-buttons] img:hover {
+  opacity: 0.4; 
+}

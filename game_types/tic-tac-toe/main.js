@@ -90,13 +90,8 @@ function Connection(socket, user, game) {
     }
     
     var win = game.logic.checkWin();
-    if( win ) {
-        socket.emit('Turn.set', game.players[game.logic.turn].username );
+    if( win )
         socket.emit('TicTacToe.win', win.pos );
-    } else {
-        
-        
-    }
         
     return {
         Rooms: Rooms,
