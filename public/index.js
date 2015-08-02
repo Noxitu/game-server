@@ -151,6 +151,8 @@ var Room = {
             Room.join();
     },
     init: function() {
+        Room.clear();
+        Room.set('loading');
         $('[data-action="Room.showIndex"]').click( Room.showIndex );
         $('[data-show]').click(function() { Room.set(this.dataset.show); return false; });
         window.onhashchange = Room.hashUpdated;
@@ -453,7 +455,7 @@ var Game = {
             });
         },
         'Game.rematch': function(data) {
-            $('main#game .postgame-rematch-btn ').addClass('light-blue');
+            $('main#game .postgame-rematch-btn ').addClass('spinning-btn').addClass('light-blue');
             Game.rematch_id = data.id;
             if( 'who' in data )
                 Toast.show({
@@ -494,6 +496,7 @@ var UI = {
         $('.button-collapse').sideNav();
         $('[data-action="submit"]').click(function(){ $(this).closest('form').submit(); return false; });
         UI.fixClickableLabels();
+        $('main#disconnected').click( function() {window.location.reload() } );
     }
 };
 
@@ -509,4 +512,17 @@ $(function() {
     Index.init_global();
     Lobby.init_global();
     Audio.init();
+    
+    socket.on('disconnect', function() {
+        socket.disconnect();
+        $('[data-loged="true"]').hide();
+        $('[data-loged="false"]').hide();
+        Room.clear();
+        Room.set('disconnected');
+        
+        Toast.show( {
+            message: 'Rozłączono z serwerem.',
+            type: 'warning'
+        });
+    });
 });

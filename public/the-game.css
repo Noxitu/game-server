@@ -28,9 +28,7 @@ a {
   display: none;
 }
 
-body > main:not(#loading) {
-  display: none;
-}
+
 
 [data-require-autoplay][data-no-autoplay],
 [data-require-no-autoplay]:not([data-no-autoplay]) {
@@ -48,4 +46,24 @@ i.material-icons {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+
+@-webkit-keyframes spin-btn {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinning-btn i {
+  -webkit-animation: spin-btn 2s ease-in-out infinite;
+}
+
+main#disconnected i {
+  font-size: 30vmin;
+}
+main#disconnected p {
+  font-size: 5vmin;
 }
