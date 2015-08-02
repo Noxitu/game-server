@@ -29,6 +29,7 @@ var io = require('./server.js').io;
 
 var IndexConnection = require('./index-connection.js').IndexConnection;
 var LobbyConnection = require('./lobby-connection.js').LobbyConnection;
+var GameConnection = require('./game-connection.js').GameConnection;
 var game_module = require('./game.js');
 
 io.on('connection', function (socket) {
@@ -95,30 +96,14 @@ io.on('connection', function (socket) {
             destroyConnection = LobbyConnection(socket, user, game);
             socket.emit('Room.set', 'lobby');
         } else {
-            socket.emit('Toast.show', {
-                message: 'Not implemented',
-                type: 'error'
-            });           
-            socket.emit('Room.join');
+            function onLoaded() {
+                socket.removeListener('Game.init', onLoaded );
+                destroyConnection = GameConnection(socket, user, game);
+                socket.emit('Room.set', 'game');
+            }
+            socket.emit('Room.load', {id: game.id, type: game.type});
+            socket.on('Game.init', onLoaded );
         }
-            
-        /*switch(data.join) {
-            case 'lobby':
-                LobbyConnection(socket, user);
-                break;
-                
-            case 'game':
-                if( ! (data.id in game_module.games) ) {
-                    socket.emit('redirect', '/');
-                    break;
-                }
-                var game = game_module.games[data.id];
-                if( game.status == 'setting up' )
-                    PregameConnection(socket, user, game);
-                else
-                    game.game_type().Connection(socket, user, game);
-        }
-        socket.removeListener( 'join', onJoin );*/
     }
     
     function initizeSession() {

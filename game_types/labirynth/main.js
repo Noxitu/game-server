@@ -6,7 +6,7 @@ module.exports.info = {
   title: "Labirynt",
   logo: "labirynth.jpg",
   players: 2,
-  //hidden: true,
+  hidden: true,
   settings: [
     {
       name: 'width',

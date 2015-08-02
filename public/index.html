@@ -109,16 +109,20 @@
       <table data-bind="lobby-player-list"><tbody></tbody></table>
       
       <h4 class="red-text text-lighten-1">Ustawienia</h4>
-      <table data-bind="lobby-settings">
-        <tbody>
-          <tr data-permanent><td>Gra</td> <td data-bind="lobby-game-type"></td></tr>
-          <tr data-permanent><td>Liczba graczy</td>  <td data-bind="lobby-player-count"></td></tr>
-        </tbody>
-      </table>
+      <div class="row">
+        <table data-bind="lobby-settings" class="col l8 m10 s12">
+          <tbody>
+            <tr data-permanent><td>Gra</td> <td data-bind="lobby-game-type"></td></tr>
+            <tr data-permanent><td>Liczba graczy</td>  <td data-bind="lobby-player-count"></td></tr>
+          </tbody>
+        </table>
+      </div>
       
       <a class="waves-effect waves-light btn-large" data-action="Lobby.startGame" disabled>Zacznij grę</a>
       <a class="waves-effect waves-light btn-large red lighten-2" data-action="Lobby.stand" disabled>Wstań</a>
     </main>
+    
+    <main id="game" class="container"></main>
     
     <div data-templates>
       <a data-template="index-game" class="collection-item avatar">

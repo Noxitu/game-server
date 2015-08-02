@@ -112,11 +112,22 @@ var Room = {
     load: function(data) {
         Room.set('loading');
         
-        if( Room.handler )
+        if( Room.handler ) {
             removeListeners(Room.currentHandler.events);
+            Room.currentHandler.deinit();
+        }
             
         if( data.id ) {
-            Room.currentHandler = Lobby;
+            if( data.type ) {
+                $.get('/game_types/'+data.type, function(html) {
+                    html = html.replace(/([^\\])~/g, '$1/game_types/'+data.type);
+                    html = html.replace('\\~', '~');
+                    $('main#game').html(html);
+                });
+                Room.currentHandler = Game;
+                return;
+            } else
+                Room.currentHandler = Lobby;
         } else {
             Room.currentHandler = Index;
         }
@@ -254,6 +265,7 @@ var Index = {
     init: function() {
         $('main#index [data-game-list] *').remove();
     },
+    deinit: function() {}
 };
 
 var Lobby = {
@@ -301,7 +313,6 @@ var Lobby = {
             var playerSlots = $('main#lobby [data-bind="lobby-player-list"] tbody tr');
             
             if( playerSlots.length == 0 ) {
-                console.log(game.players.length);
                 for( var i = 0; i < game.players.length; i++ )
                     $('main#lobby [data-bind="lobby-player-list"] tbody').append('<tr data-lobby-player-i="'+i+'"><td><span data-bind="lobby-player-name"></span></tr>');
                 playerSlots = $('main#lobby [data-bind="lobby-player-list"] tbody tr');
@@ -336,6 +347,7 @@ var Lobby = {
         $('main#lobby [data-bind="lobby-settings"] tbody tr:not([data-permanent])').remove();
         $('main#lobby [data-bind="lobby-player-list"] tbody tr').remove();
     },
+    deinit: function() {}
 };
 
 var Audio = {
@@ -386,6 +398,29 @@ var Audio = {
         $('[data-action="Audio.mobileEnableAudio"]').click(Audio.mobileEnableAudio);
         $('body').append('<audio id="Audio-notify" hidden preload="auto"> <source src="sound/notify.mp3" type="audio/mpeg"> <source src="sound/notify.wav" type="audio/wav"> </audio>');
         Audio.notifyElement = $('#Audio-notify')[0];
+    }
+};
+
+var Game = {
+    events: {
+    },
+    init: function(internal) {
+        if( Room.currentHandler != Game )
+            throw 'Shouldn\'t happen.';
+            
+        Game.internal = internal;
+        
+        Game.internal.init();
+        addListeners(Game.events);
+        addListeners(Game.internal.events);
+        socket.emit('Game.init');
+    },
+    deinit: function() {
+        if( Game.internal !== undefined ) {
+            removeListeners(Game.internal.events);
+            Game.internal.deinit();
+        }
+        Game.internal = undefined;
     }
 };
 

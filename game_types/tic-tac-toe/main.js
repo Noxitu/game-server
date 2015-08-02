@@ -42,36 +42,47 @@ Logic.prototype.checkWin = function() {
 
 
 function Connection(socket, user, game) {
-    function onMove(pos) {
-        if( game.status != 'going on' )
-            return;
-        
-        if( game.logic.turn != game.players.indexOf(user) )
-            return;
-            
-        if( game.logic.map[pos] != ' ' )
-            return;
-            
-        game.logic.map[pos] = ['x','o'][game.logic.turn];
-        game.logic.turn = 1-game.logic.turn;
-        
-        io.to(game.room()).emit('update', game.logic.map);
-        
-        var win = game.logic.checkWin();
-        if( win || game.logic.map.indexOf(' ') == -1 )
-            game.changeStatus('ended');
-            
-        if( win )
-            io.to(game.room()).emit('win', win.pos );
+    var game_room = game.room();
+    
+    function gameIsOngoing() {
+        return game.status == 'ongoing';
     }
-
-    socket.emit('update', game.logic.map);
+    
+    var Rooms = [game_room];
+    var Events = {
+        'TicTacToe.click': function(pos) {
+            if( !gameIsOngoing() )
+                return;
+        
+            if( game.logic.turn != game.players.indexOf(user) )
+                return;
+            
+            if( game.logic.map[pos] != ' ' )
+                return;
+            
+            game.logic.map[pos] = ['x','o'][game.logic.turn];
+            game.logic.turn = 1-game.logic.turn;
+            
+            io.to(game_room).emit('TicTacToe.update', game.logic.map);
+            
+            var win = game.logic.checkWin();
+            if( win || game.logic.map.indexOf(' ') == -1 )
+                game.changeStatus('ended');
+                
+            if( win )
+                io.to(game_room).emit('TicTacToe.win', win.pos );
+        }
+    };
+    
+    socket.emit('TicTacToe.update', game.logic.map);
     var win = game.logic.checkWin();
     if( win )
-        socket.emit('win', win.pos );
-    
-    socket.join(game.room());
-    socket.on('move', onMove );
+        socket.emit('TicTacToe.win', win.pos );
+        
+    return {
+        Rooms: Rooms,
+        Events: Events
+    };
 }
 
 

@@ -51,7 +51,7 @@ function LobbyConnection(socket, user, game) {
             if( user !== game.owner || game.players.indexOf(null) != -1 )
                 return;
                 
-            //game.logic = new (game.game_type().Logic)(game);
+            game.logic = new (game.game_type().Logic)(game);
             game.changeStatus('ongoing');
             io.to(game_room).emit('Room.join', game.id );
         }

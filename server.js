@@ -16,7 +16,23 @@ server.listen(port, function () {
   console.log('Server listening at port %d...', port);
 });
 
+var Connection = {
+    init: function(socket, Rooms, Events) {
+        for( var i in Rooms )
+            socket.join(Rooms[i]);
+        for( var e in Events )
+            socket.on(e, Events[e]);
+    },
+    deinit: function(socket, Rooms, Events) {
+        for( var i in Rooms )
+            socket.leave(Rooms[i]);
+        for( var e in Events )
+            socket.removeListener(e, Events[e]);    
+    }
+};
+
 module.exports = {
   io: io,
-  app: app
+  app: app,
+  Connection: Connection
 };

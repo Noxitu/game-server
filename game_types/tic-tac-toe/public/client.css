@@ -1,0 +1,35 @@
+main#game [data-boxes] {
+  font-size: 0; 
+}
+main#game .box {
+  border: 2px solid black;
+  display: inline-block;
+  width: 64px;
+  height: 64px;
+  margin: 0;
+}
+main#game .box:not([data-sprite]) {
+  cursor: pointer;
+}
+main#game .box[data-box-id="0"], main#game .box[data-box-id="1"], main#game .box[data-box-id="2"] { border-top-width: 0; }
+main#game .box[data-box-id="6"], main#game .box[data-box-id="7"], main#game .box[data-box-id="8"] { border-bottom-width: 0; }
+main#game .box[data-box-id="0"], main#game .box[data-box-id="3"], main#game .box[data-box-id="6"] { border-left-width: 0; }
+main#game .box[data-box-id="2"], main#game .box[data-box-id="5"], main#game .box[data-box-id="8"] { border-right-width: 0; }
+
+.box[data-sprite="o"] {
+  background: url('o.png') no-repeat center center;
+}
+.box[data-sprite="x"] {
+  background: url('x.png') no-repeat center center;
+}
+
+[data-boxes][data-win="0"] .box[data-box-id="0"], [data-boxes][data-win="0"] .box[data-box-id="1"], [data-boxes][data-win="0"] .box[data-box-id="2"], 
+[data-boxes][data-win="1"] .box[data-box-id="3"], [data-boxes][data-win="1"] .box[data-box-id="4"], [data-boxes][data-win="1"] .box[data-box-id="5"], 
+[data-boxes][data-win="2"] .box[data-box-id="6"], [data-boxes][data-win="2"] .box[data-box-id="7"], [data-boxes][data-win="2"] .box[data-box-id="8"], 
+[data-boxes][data-win="3"] .box[data-box-id="0"], [data-boxes][data-win="3"] .box[data-box-id="3"], [data-boxes][data-win="3"] .box[data-box-id="6"], 
+[data-boxes][data-win="4"] .box[data-box-id="1"], [data-boxes][data-win="4"] .box[data-box-id="4"], [data-boxes][data-win="4"] .box[data-box-id="7"], 
+[data-boxes][data-win="5"] .box[data-box-id="2"], [data-boxes][data-win="5"] .box[data-box-id="5"], [data-boxes][data-win="5"] .box[data-box-id="8"], 
+[data-boxes][data-win="6"] .box[data-box-id="0"], [data-boxes][data-win="6"] .box[data-box-id="4"], [data-boxes][data-win="6"] .box[data-box-id="6"], 
+[data-boxes][data-win="7"] .box[data-box-id="2"], [data-boxes][data-win="7"] .box[data-box-id="4"], [data-boxes][data-win="7"] .box[data-box-id="7"] {
+  background-color: lime;
+}
