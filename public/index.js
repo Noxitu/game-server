@@ -49,7 +49,7 @@ var Login = {
         return false;
     },
     events: {
-        'Login.showForm': function(socket) {
+        'Login.showForm': function() {
             $('[data-loged="true"]').hide();
             $('[data-loged="false"]').show();
             Room.set('login');
@@ -69,10 +69,13 @@ var Login = {
     },
     init: function() {
         var sessionId = localStorage.getItem('the-game session-id');
-        if( sessionId ){ 
+        if( sessionId !== null ){ 
             socket.emit('session-id', sessionId);
-        } else
+        } else {
             Login.events['Login.showForm']();
+        }
+            
+        console.log(Login.events['Login.showForm']);
             
         addListeners(Login.events);
         
@@ -505,13 +508,13 @@ var socket;
 
 $(function() {
     socket = io();
-    Login.init();
-    Room.init();     
     Toast.init();
+    Audio.init();
+    Room.init();     
     UI.init();
     Index.init_global();
     Lobby.init_global();
-    Audio.init();
+    Login.init();
     
     socket.on('disconnect', function() {
         socket.disconnect();
