@@ -16,12 +16,12 @@ function newid(func, collection) {
     return id;
 }
 
-function getUser( data ) {
-    if( data.username in users )
-        return users[data.username];
+function getUser( username ) {
+    if( username in users )
+        return users[username];
     var user = users[username] = { 
         id: newid( user_id, users ),
-        username: data.username
+        username: username
     };
     return user;
 }
@@ -59,7 +59,7 @@ io.on('connection', function (socket) {
             return;
         }
            
-        user = getUser( data );
+        user = getUser( data.username );
             
         db.session_create( user.username, function(sessionId) {
             socket.emit('Login.storeSessionId', {sessionId: sessionId});
