@@ -1,14 +1,5 @@
 
-// sessions
 var users = {};
-var sessions = {};
-
-function uuid() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
-        return v.toString(16);
-    });
-}
 
 function user_id() {
     return 'xxxx-xxxx-xxxx'.replace(/[xy]/g, function(c) {
@@ -31,23 +22,27 @@ var IndexConnection = require('./index-connection.js').IndexConnection;
 var LobbyConnection = require('./lobby-connection.js').LobbyConnection;
 var GameConnection = require('./game-connection.js').GameConnection;
 var game_module = require('./game.js');
+var db = require('./db.js');
 
 io.on('connection', function (socket) {
     var user = null;
     
     // auth()
     function onSessionId(data) {
-        if( data in sessions ) {
-            user = sessions[data];
-            initizeSession();
-        } else
-            socket.emit('Login.showForm');
+        db.session_restore( data, function(username) {
+            if( username === null )
+                socket.emit('Login.showForm');
+            else {
+                user = users[username];
+                initizeSession();
+            }
+        });
     }
     
     function onLogin(data) {
         if( data.username.length < 3 ) {
             socket.emit('Toast.show', {
-                message: 'Błędne dane logowania.',
+                message: 'Login musi mieć przynajmniej 3 znaki.',
                 type: 'error'
             });
             socket.emit('Login.showForm');
@@ -62,11 +57,10 @@ io.on('connection', function (socket) {
                 username: data.username
             };
             
-        var sessionId = newid( uuid, sessions );
-        
-        socket.emit('Login.storeSessionId', {sessionId: sessionId});
-        sessions[sessionId] = user;
-        initizeSession();
+        db.session_create( user.username, function(sessionId) {
+            socket.emit('Login.storeSessionId', {sessionId: sessionId});
+            initizeSession();
+        });
     }
     
     var destroyConnection;

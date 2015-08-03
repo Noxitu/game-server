@@ -1,10 +1,13 @@
 {
   "name": "the-game",
-  "version": "0.1.0",
+  "version": "0.9.0",
   "description": "The Game Server",
   "dependencies": {
     "socket.io": "~1.3.5",
     "express": "~4.13.0"
+  },
+  "optionalDependencies": {
+    "pg": "~4.4.1"
   },
   "devDependencies": {},
   "scripts": {
