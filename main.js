@@ -16,6 +16,16 @@ function newid(func, collection) {
     return id;
 }
 
+function getUser( data ) {
+    if( data.username in users )
+        return users[data.username];
+    var user = users[username] = { 
+        id: newid( user_id, users ),
+        username: data.username
+    };
+    return user;
+}
+
 var io = require('./server.js').io;
 
 var IndexConnection = require('./index-connection.js').IndexConnection;
@@ -33,7 +43,7 @@ io.on('connection', function (socket) {
             if( username === null )
                 socket.emit('Login.showForm');
             else {
-                user = users[username];
+                user = getUser( username );
                 initizeSession();
             }
         });
@@ -49,13 +59,7 @@ io.on('connection', function (socket) {
             return;
         }
            
-        if( data.username in users )
-            user = users[data.username];
-        else
-            user = users[data.username] = { 
-                id: newid( user_id, users ),
-                username: data.username
-            };
+        user = getUser( data );
             
         db.session_create( user.username, function(sessionId) {
             socket.emit('Login.storeSessionId', {sessionId: sessionId});
