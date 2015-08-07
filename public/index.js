@@ -18,11 +18,13 @@ function removeListeners(events) {
 
 var Toast = {
     show: function(data) {
-        console.log('Toast: ['+data.type+'] '+data.message);
+        var message = 'entity' in data ? document.l10n.getEntitySync(data.entity).value : data.message;
+        console.log('Toast: ['+data.type+'] '+message);
         var color = {'info': 'light-blue', 'warning': 'yellow', 'error': 'red'}[data.type];
         if( data.type == 'info' )
             data.type = 'info_outline';
-        Materialize.toast('<i class="material-icons '+color+'-text text-lighten-1 left">'+data.type+'</i>'+data.message, 3000);
+        Materialize.toast('<i class="material-icons '+color+'-text text-lighten-1 left">'+data.type+'</i>'+message, 3000);
+        
         if( data.notify === true )
             Audio.notify();
         if( 'more' in data )
@@ -31,6 +33,51 @@ var Toast = {
     init: function() {
         socket.on('Toast.show', Toast.show );
     }
+};
+
+var Title = {
+    priority_list: '*!^',
+    notifications: {},
+    add: function(c) {
+        if( c in Title.notifications )
+            Title.notifications[c]++;
+        else
+            Title.notifications[c] = 1;
+        Title.update();
+    },
+    remove: function(c) {
+        if( Title.notifications[c] > 0 )
+            Title.notifications[c]--;
+        Title.update();
+    },
+    clear: function(c) {
+        if( c )
+            delete Title.notifications[c];
+        else
+            Title.notifications = {};
+        Title.update();
+    },
+    update: function() {
+        for( var i = 0; i < Title.priority_list.length; i++ ) {
+            var c = Title.priority_list.charAt(i);
+            if( Title.notifications[c] > 0 ) {
+                document.title = c + ' ' + Title.title;
+                return;
+            }
+        }
+        document.title = Title.title;
+    },
+    init: function() {
+        Title.title = document.title;
+    }
+};
+
+var Focus = {
+    init: function() {
+        Focus.hidden = document.hidden;
+        window.onfocus = function() { Focus.hidden = false; };
+        window.onblur = function() { Focus.hidden = true; };
+    },
 };
 
 var Login = {
@@ -166,13 +213,18 @@ var Room = {
 
 var Index = {
     appendSelect: function(element, name, label, values, labels) {
+        console.log(labels);
         var div_e = $('<div class="input-field"></div>');
         var select_e = $('<select name="'+name+'"></select>');
         for( var j = 0; j < values.length; j++ )
-            select_e.append('<option value="'+values[j]+'">'+labels[j]+'</option>');
+            if( labels === undefined || labels[j] === undefined )
+                select_e.append('<option value="'+values[j]+'">'+values[j]+'</option>');
+            else
+                select_e.append('<option value="'+values[j]+'" data-l10n-id="'+labels[j]+'"></option>');
+              
             
         div_e.append(select_e);
-        div_e.append('<label for="'+name+'">'+label+'</label>');
+        div_e.append('<label for="'+name+'" data-l10n-id="'+label+'">'+label+'</label>');
         element.append(div_e);
         select_e.material_select();
     },
@@ -189,23 +241,29 @@ var Index = {
         $('main#create-game [data-action="submit"]').attr('disabled', null);
         
         if( game_type.players.length !== undefined ) {
-            Index.appendSelect(element, 'players_count', 'Liczba graczy', game_type.players, game_type.players);
+            Index.appendSelect(element, 'players_count', 'player_count', game_type.players);
         }
         
         for( var i = 0; i < game_type.settings.length; i++ ) {
             var setting = game_type.settings[i];
             if( 'options' in setting ) {
-                Index.appendSelect(element, setting.name, setting.label, setting.options, setting.options_labels);
+                Index.appendSelect(element, setting.name, game_type.l20n_prefix+'_settings_'+setting.name, setting.options, setting.options.map(function(e) {
+                    return game_type.l20n_prefix+'_settings_'+setting.name+'_'+e; }
+                ) );
             } else {
                 var label_attrs = '', input_attrs = '';
                 if( setting.value_ex && setting.value_ex['default'] ) {
                     label_attrs += ' class="active"';
                     input_attrs += ' value="' + setting.value_ex['default'] + '"';
                 }
-                element.append('<div class="input-field"><label for="'+setting.name+'"'+label_attrs+'>'+setting.label+': </label><input type="number" name="'+setting.name+'" required'+input_attrs+'></div>');
+                element.append('<div class="input-field"><label for="'+setting.name+'"'+label_attrs+'><span data-l10n-id="'+game_type.l20n_prefix+'_settings_'+setting.name+'"></span>: </label><input type="number" name="'+setting.name+'" required'+input_attrs+'></div>');
             }
         }    
-        
+        element.each( function() {
+            document.l10n.localizeNode(this);
+        });
+        element.find('select').material_select();
+        element.find('select').closest('.input-field').children('.caret').remove();
         UI.fixClickableLabels(element);
     },
     createGame: function() {
@@ -228,8 +286,9 @@ var Index = {
             
             for( var t in game_types ) {
                 var type = game_types[t];
-                $('main#create-game select[name="id"]').append('<option value="'+type.id+'">'+type.title+'</option>');
+                $('main#create-game select[name="id"]').append('<option value="'+type.id+'" data-l10n-id="'+type.l20n_prefix+'_title">'+type.id+'</option>');
             }
+            document.l10n.localizeNode($('main#create-game select[name="id"]')[0]);
             
             $('main#create-game select[name="id"]').material_select();
             $('main#create-game select[name="id"]').closest('.input-field').children('.caret').remove();
@@ -241,14 +300,14 @@ var Index = {
                 
                 var game_e = $('main#index [data-game-list] > [data-game-id="'+game.id+'"]');
                 if( game_e.length == 0 ) {
-                    game_e = $('[data-templates] [data-template="index-game"]').clone();
+                    game_e = $('[data-templates] [data-template="index-game"]').clone(true);
                     $('main#index [data-game-list]').prepend( game_e );
                     game_e.attr('data-game-id', game.id);
                     game_e.click(Index.joinGame);
                 }
                     
                 game_e.find('img').attr('src', '/game_types/'+game.type+'/'+Index.game_types[game.type].logo);
-                game_e.find('.title').text( Index.game_types[game.type].title );
+                game_e.find('.title').attr('data-l10n-id', Index.game_types[game.type].l20n_prefix+'_title');
                 var player_list = '';
                 for( var j = 0; j < game.players.length; j++ ) {
                     player_list += (game.players[j] ? game.players[j] : '-') + ' ';
@@ -294,21 +353,26 @@ var Lobby = {
     events: {
         'Lobby.setGameTypeInfo': function(game_type) {
             Lobby.game_type = game_type;
-            $('main#lobby [data-bind="lobby-game-type"]').text(game_type.title);
+            $('main#lobby [data-bind="lobby-game-type"]')
+                .attr('data-l10n-id', game_type.l20n_prefix+'_title')
+                .each(function(){
+                    document.l10n.localizeNode(this);
+                });
         },
         'Lobby.setSettings': function(settings) {
             for( var i = 0; i < Lobby.game_type.settings.length; i++ ) {
                 var setting = Lobby.game_type.settings[i];
-                var name = setting.label;
-                var value;
+                var name = Lobby.game_type.l20n_prefix+'_settings_'+setting.name;
+                var value = settings[setting.name];;
                 if( 'options' in setting ) {
-                    var pos = setting.options.indexOf(settings[setting.name]);
-                    value = setting.options_labels[pos];
+                    $('main#lobby table[data-bind="lobby-settings"]').append('<tr><td data-l10n-id="' + name + '"></td><td data-l10n-id="' + name + '_' + value + '"></td></tr>');
                 } else if( setting.value == 'int' ) {
-                    value = settings[setting.name];
+                    $('main#lobby table[data-bind="lobby-settings"]').append('<tr><td data-l10n-id="' + name + '"></td><td>' + value + '</td></tr>');
                 }
-                $('main#lobby table[data-bind="lobby-settings"]').append('<tr><td>' + name + '</td><td>' + value + '</td></tr>');
             }
+            $('main#lobby table[data-bind="lobby-settings"]').each(function(){
+                document.l10n.localizeNode(this);
+            });
         },
         'Lobby.setIsOwner': function(value) {
             Lobby.isOwner = value;
@@ -326,7 +390,7 @@ var Lobby = {
                     $('main#lobby [data-bind="lobby-player-list"] tbody').append('<tr data-lobby-player-i="'+i+'"><td><span data-bind="lobby-player-name"></span></tr>');
                 playerSlots = $('main#lobby [data-bind="lobby-player-list"] tbody tr');
                 playerSlots.find('td').each( function(){ 
-                    var e = $('[data-templates] [data-template="lobby-sit-here"]').clone();
+                    var e = $('[data-templates] [data-template="lobby-sit-here"]').clone(true);
                     e.click(Lobby.sit);
                     $(this).append(e);
                 });
@@ -430,7 +494,7 @@ var Game = {
             }
             var e = $('main#game .game-turn-info');
             if( e.length == 0 ) {
-                e = $('[data-templates] [data-template="game-turn-info"]').clone();
+                e = $('[data-templates] [data-template="game-turn-info"]').clone(true);
                 $('main#game').prepend(e);
             }
             e.find('.card-panel')
@@ -446,12 +510,12 @@ var Game = {
                 .addClass('teal');
         },
         'Game.ended': function() {
-            var e = $('[data-templates] [data-template="postgame-rematch"]').clone();
+            var e = $('[data-templates] [data-template="postgame-rematch"]').clone(true);
             $('main#game').append(e);
             e.click(Game.rematch);
             Game.rematch_id = undefined;
             Toast.show({
-                message: 'Gra zakończona',
+                entity: 'game_ended',
                 type: 'info'
             });
         },
@@ -460,7 +524,7 @@ var Game = {
             Game.rematch_id = data.id;
             if( 'who' in data )
                 Toast.show({
-                    message: 'Gracz '+data.who+' zaproponował rewanż.',
+                    message: document.l10n.getEntitySync('regame_proposed', data).value,
                     type: 'info',
                     notify: true
                 });
@@ -504,7 +568,7 @@ var UI = {
 
 var socket;
 
-$(function() {
+function global_init() {
     socket = io();
     Toast.init();
     Audio.init();
@@ -513,17 +577,36 @@ $(function() {
     Index.init_global();
     Lobby.init_global();
     Login.init();
+    Title.init();
+    Focus.init();
     
     socket.on('disconnect', function() {
-        socket.disconnect();
+        socket.on('connect', function() {
+            window.location.reload();
+        });
+        
         $('[data-loged="true"]').hide();
         $('[data-loged="false"]').hide();
         Room.clear();
         Room.set('disconnected');
         
         Toast.show( {
-            message: 'Rozłączono z serwerem.',
+            entity: 'disconnected',
             type: 'warning'
         });
+    });
+    
+    document.l10n.ready( function() {
+        $('select').material_select();
+        $('select').closest('.input-field').children('.caret').remove();
+    });
+}
+
+$( function() {
+    var done = false;
+    document.l10n.ready( function() {
+        if( !done )
+            global_init();
+        done = true;
     });
 });

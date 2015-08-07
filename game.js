@@ -15,10 +15,10 @@ function verify_settings(settings) {
         
     if( game_type_info.players.length === undefined ) {
         if( 'players_count' in settings )
-            return 'Player count provided while not allowed';
+            return 'invalid_player_count'; //return 'Player count provided while not allowed';
     } else {
         if( game_type_info.players.indexOf(settings.players_count|0) == -1 )
-            return 'Illegal player count';
+            return 'invalid_player_count'; //return 'Illegal player count';
     }
     
     for( var i = 0; i < game_type_info.settings.length; i++ ) {

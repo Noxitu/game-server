@@ -2,15 +2,13 @@
 var io = require('../../server.js').io;
 
 var info = {
-    title: "Kółko i krzyżyk",
+    l20n_prefix: "TicTacToe",
     logo: "tic-tac-toe.png",
     players: 2,
     settings: [
         {
             name: 'first',
-            label: 'Zaczyna gracz',
             options: ['random', '1p', '2p'],
-            options_labels: ['Losowo', 'Gracz nr 1', 'Gracz nr 2']
         }
     ]
 }

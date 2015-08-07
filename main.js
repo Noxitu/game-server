@@ -27,6 +27,7 @@ function getUser( username ) {
 }
 
 var io = require('./server.js').io;
+require('./l20n/l20n.js');
 
 var IndexConnection = require('./index-connection.js').IndexConnection;
 var LobbyConnection = require('./lobby-connection.js').LobbyConnection;
@@ -52,7 +53,7 @@ io.on('connection', function (socket) {
     function onLogin(data) {
         if( data.username.length < 3 ) {
             socket.emit('Toast.show', {
-                message: 'Login musi mieć przynajmniej 3 znaki.',
+                entity: 'invalid_login',
                 type: 'error'
             });
             socket.emit('Login.showForm');
@@ -81,7 +82,7 @@ io.on('connection', function (socket) {
         
         if( ! (data.id in game_module.games) ) {
             socket.emit('Toast.show', {
-                message: 'Game not found',
+                entity: 'game_not_found',
                 type: 'warning'
             });
             socket.emit('Room.join');
@@ -119,7 +120,7 @@ io.on('connection', function (socket) {
     
     socket.on('error', function(e) {
         socket.emit('Toast.show', {
-            message: 'Server side exception',
+            message: 'ServerSideException',
             type: 'error',
             notify: true,
             more: e.stack

@@ -2,13 +2,12 @@
 var io = require('../../server.js').io;
 
 var info = {
-    title: "Papier, kamień, nożyce",
+    l20n_prefix: "JanKenPon",
     logo: "logo.png",
     players: 2,
     settings: [
         {
             name: 'wins',
-            label: 'Do ilu wygranych',
             value: 'int',
             value_ex: { min: 1, 'default': 5 }
         }

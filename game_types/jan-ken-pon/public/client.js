@@ -47,16 +47,16 @@ var JanKenPon = {
             
             console.log(picks_dict);
             if( Object.keys(picks_dict).length == 1 ) {
-                Toast.show( { message: 'Remis', type: 'info' } );
+                Toast.show( { entity: 'JanKenPon_draw', type: 'info' } );
                 return;
             }
             
             if( !('rock' in picks_dict) )
-                Toast.show( { message: 'Nożyce tną papier', type: 'info' } );
+                Toast.show( { entity: 'JanKenPon_scissors_beats_paper', type: 'info' } );
             else if( !('paper' in picks_dict) )
-                Toast.show( { message: 'Kamień tępi nożyce', type: 'info' } );
+                Toast.show( { entity: 'JanKenPon_rock_beats_scissors', type: 'info' } );
             else
-                Toast.show( { message: 'Papier owija kamień', type: 'info' } );
+                Toast.show( { entity: 'JanKenPon_paper_beats_rock', type: 'info' } );
         },
         'JanKenPon.players': function(players) {
             var e = $('main#game [data-bind="name"]')

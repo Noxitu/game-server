@@ -12,7 +12,7 @@ function IndexConnection(socket, user) {
             var error = game_module.verify_settings(settings);
             if( error ) {
                 socket.emit('Toast.show', {
-                    message: error,
+                    entity: error,
                     type: 'error'
                 });
                 socket.emit('Room.set', 'create-game');

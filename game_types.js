@@ -1,6 +1,7 @@
 
 var server = require('./server.js');
 var express = require('express');
+var l20n = require('./l20n/l20n.js');
 var fs = require('fs');
 var game_types = {};
 var game_types_info = {};
@@ -15,6 +16,8 @@ fs.readdir('./game_types/', function( err, list ) {
     var game_type = require('./game_types/'+id+'/main.js');
     if( game_type.info.hidden === true )
       continue;
+      
+    l20n.addResource('./game_types/'+id+'/l20n/');
       
     game_types[id] = game_type;
     game_types_info[id] = game_type.info;

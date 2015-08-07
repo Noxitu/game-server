@@ -1,0 +1,27 @@
+<login_label "Nazwa użytkownika">
+<login_action "Zaloguj">
+<logout "Wyloguj">
+<index "Indeks">
+<pick_game_type "Wybierz typ gry">
+<game_type "Typ gry">
+<settings "Ustawienia">
+<create_game "Stwórz grę">
+<cancel "Anuluj">
+<players "Gracze">
+<game "Gra">
+<player_count "Liczba graczy">
+<start_game "Zacznij grę">
+<stand_up "Wstań">
+<click_to_reconnect "Kliknij by połączyć ponownie">
+<sit_here "Usiądź tu">
+<turn_by "Ruch wykonuje">
+<change_language "Zmień język">
+
+<regame_proposed "Gracz {{ $who }} zaproponował rewanż">
+<game_ended "Gra zakończona">
+<disconnected "Rozłączono z serwerem">
+
+<invalid_player_count "Nieprawidłowa liczba graczy">
+<invalid_login "{{ login_label }} musi mieć przynajmniej 3 znaki.">
+<game_not_found "Gra nie istnieje">
+

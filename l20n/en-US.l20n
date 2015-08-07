@@ -1,0 +1,26 @@
+<login_label "Login">
+<login_action "Login">
+<logout "Logout">
+<index "Index">
+<pick_game_type "Select game type">
+<game_type "Game type">
+<settings "Settings">
+<create_game "Create game">
+<cancel "Cancel">
+<players "Players">
+<game "Game">
+<player_count "Player count">
+<start_game "Start game">
+<stand_up "Stand up">
+<click_to_reconnect "Click to reconnect">
+<sit_here "Sit here">
+<turn_by "Turn">
+
+<regame_proposed "Player {{ $who }} proposed a rematch">
+<game_ended "Game finished">
+<disconnected "Disconnected">
+
+<invalid_player_count "Invalid player count">
+<invalid_login "{{ login_label }} requires at least 3 characters">
+<game_not_found "Game not found">
+

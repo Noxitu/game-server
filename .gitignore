@@ -1,5 +1,8 @@
 # Dependency directory
 /node_modules
 
+# Temporary files
+/tmp
+
 #Log files
 *.log
