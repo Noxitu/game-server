@@ -407,11 +407,11 @@ var Lobby = {
                 }
             }
             
-            if( Lobby.isOwner && game.players.indexOf(null) == -1 ) 
+            if( Lobby.isOwner && game.players.indexOf(null) == -1 ) {
                 $('main#lobby [data-action="Lobby.startGame"]').removeClass('disabled');
                 Title.add('*');
                 Audio.notify();
-            else {
+            } else {
                 $('main#lobby [data-action="Lobby.startGame"]').addClass('disabled');
                 Title.clear('*');
             }
