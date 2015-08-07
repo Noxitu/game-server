@@ -579,6 +579,7 @@ var socket;
 
 function global_init() {
     socket = io();
+    Title.init();
     Toast.init();
     Audio.init();
     Room.init();     
@@ -586,7 +587,6 @@ function global_init() {
     Index.init_global();
     Lobby.init_global();
     Login.init();
-    Title.init();
     Focus.init();
     $('body').removeAttr('data-loading');
     

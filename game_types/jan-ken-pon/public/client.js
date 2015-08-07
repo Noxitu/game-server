@@ -1,6 +1,7 @@
 
 var JanKenPon = {
     click: function() {
+        Title.clear('*');
         socket.emit('JanKenPon.click', this.dataset.pick);
         JanKenPon.idleSince = new Date().getTime();
     },
