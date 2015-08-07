@@ -10,7 +10,7 @@ var info = {
             name: 'wins',
             label: 'Do ilu wygranych',
             value: 'int',
-            value_ex: { min: 1, 'default': 3 }
+            value_ex: { min: 1, 'default': 5 }
         }
     ]
 }
