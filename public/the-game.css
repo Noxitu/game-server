@@ -15,6 +15,10 @@ body {
   flex-direction: column;
 }
 
+body[data-loading] main:not(#loading) {
+  opacity: 0 !important;
+}
+
 main {
   flex: 1 0 auto;
   padding: 3em 0;

@@ -579,6 +579,7 @@ function global_init() {
     Login.init();
     Title.init();
     Focus.init();
+    $('body').removeAttr('data-loading');
     
     socket.on('disconnect', function() {
         socket.on('connect', function() {
@@ -600,6 +601,7 @@ function global_init() {
         $('select').material_select();
         $('select').closest('.input-field').children('.caret').remove();
     });
+    
 }
 
 $( function() {
