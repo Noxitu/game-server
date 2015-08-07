@@ -2,9 +2,11 @@
 var JanKenPon = {
     click: function() {
         socket.emit('JanKenPon.click', this.dataset.pick);
+        JanKenPon.idleSince = new Date().getTime();
     },
     events: {
         'JanKenPon.cantPlay': function() {
+            JanKenPon.cantPlay = true;
             $('main#game [data-jankenpon-buttons]').hide();
         },
         'JanKenPon.players': function(players) {
@@ -45,7 +47,6 @@ var JanKenPon = {
             for( var i = 0; i < 2; i++ )
                 picks_dict[picks[i]] = 1;
             
-            console.log(picks_dict);
             if( Object.keys(picks_dict).length == 1 ) {
                 Toast.show( { entity: 'JanKenPon_draw', type: 'info' } );
                 return;
@@ -64,12 +65,20 @@ var JanKenPon = {
                 e.eq(i).text(players[i]);
         },
         'JanKenPon.end': function(now) {
+            Title.clear('*');
             if( now ) {
                 $('main#game [data-jankenpon-buttons]').slideUp();
                 $('main#game [data-jankenpon-picks] img').slideUp();
             } else {
                 $('main#game [data-jankenpon-buttons]').hide();
                 $('main#game [data-jankenpon-picks] img').hide();
+            }
+        },
+        'JanKenPon.round': function() {
+            if( JanKenPon.cantPlay !== true ) {
+                Title.add('*');
+                if( Focus.state == 'off' || JanKenPon.idleSince + 20000 < new Date().getTime() )
+                    Audio.notify();
             }
         }
     },
@@ -79,6 +88,7 @@ var JanKenPon = {
         $('main#game [data-jankenpon-buttons] img').each( function() {
             JanKenPon.srcs[this.dataset.pick] = $(this).attr('src');
         });
+        JanKenPon.idleSince = new Date().getTime();
     },
     deinit: function() {}
 };

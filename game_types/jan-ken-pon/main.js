@@ -66,6 +66,8 @@ function Connection(socket, user, game) {
             if( game.logic.scores.indexOf(game.settings.wins|0) != -1 ) {
                 io.to(game_room).emit('JanKenPon.end', 'now');
                 game.end();
+            } else {
+                io.to(game_room).emit('JanKenPon.round');
             }
         }
     };
@@ -80,6 +82,9 @@ function Connection(socket, user, game) {
     socket.emit('JanKenPon.history', game.logic.history );
     socket.emit('JanKenPon.scores', game.logic.scores );
     socket.emit('JanKenPon.picks', [0,1].map( function(i) { return i == player_i ? game.logic.picks[i] : null; } ) );
+    
+    if( game.logic.picks[player_i] === null )
+        socket.emit('JanKenPon.round');
 
     return {
         Rooms: Rooms,

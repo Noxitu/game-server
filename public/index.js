@@ -74,9 +74,9 @@ var Title = {
 
 var Focus = {
     init: function() {
-        Focus.hidden = document.hidden;
-        window.onfocus = function() { Focus.hidden = false; };
-        window.onblur = function() { Focus.hidden = true; };
+        Focus.state = document.hidden ? 'off' : 'on';
+        window.onfocus = function() { Focus.state = 'on'; };
+        window.onblur = function() { Focus.state = 'off'; };
     },
 };
 
@@ -131,6 +131,7 @@ var Login = {
 
 var Room = {
     clear: function() {
+        Title.clear();
         $('main:visible').hide();
     },
     set: function(id) {
@@ -408,8 +409,12 @@ var Lobby = {
             
             if( Lobby.isOwner && game.players.indexOf(null) == -1 ) 
                 $('main#lobby [data-action="Lobby.startGame"]').removeClass('disabled');
-            else
+                Title.add('*');
+                Audio.notify();
+            else {
                 $('main#lobby [data-action="Lobby.startGame"]').addClass('disabled');
+                Title.clear('*');
+            }
         }
     },
     init_global: function() {
@@ -488,6 +493,7 @@ var Game = {
     },
     events: {
         'Game.setTurn': function(name) {
+            Title.clear('*');
             if( name === undefined ) {
                 $('main#game .game-turn-info').remove();
                 return;
@@ -504,12 +510,14 @@ var Game = {
                     .text(name);
         },
         'Game.yourTurn': function() {
+            Title.add('*');
             Audio.notify();
             $('main#game .game-turn-info .card-panel')
                 .removeClass('red')
                 .addClass('teal');
         },
         'Game.ended': function() {
+            Title.clear('*');
             var e = $('[data-templates] [data-template="postgame-rematch"]').clone(true);
             $('main#game').append(e);
             e.click(Game.rematch);
@@ -520,6 +528,7 @@ var Game = {
             });
         },
         'Game.rematch': function(data) {
+            Title.add('!');
             $('main#game .postgame-rematch-btn ').addClass('spinning-btn').addClass('light-blue');
             Game.rematch_id = data.id;
             if( 'who' in data )
