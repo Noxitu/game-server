@@ -51,7 +51,7 @@ var DotsAndBoxes = {
             $('[data-bind="DotsAndBoxes.board"] .dash').click( DotsAndBoxes.click );
             $('[data-bind="DotsAndBoxes.board"] [data-owner]').each( function() {
                 if( this.dataset.owner != -1 )
-                    $(this).addClass({0:'blue lighten-2', 1:'orange lighten-2'}[this.dataset.owner]);
+                    $(this).addClass({0: 'blue lighten-2', 1: 'orange lighten-1'}[this.dataset.owner]);
             });
         },
         'DotsAndBoxes.names': function(names) {
@@ -66,7 +66,7 @@ var DotsAndBoxes = {
             function pos(x,y) { return x+','+y; }
             $('[data-'+data.what+'="'+pos(data.x, data.y)+'"]')
                 .attr('data-owner', data.value)
-                .addClass({0:'blue lighten-2', 1:'orange lighten-2'}[data.value]);
+                .addClass({0:'blue lighten-2', 1:'orange lighten-1'}[data.value]);
         }
     },
     init: function() {

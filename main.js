@@ -119,6 +119,7 @@ io.on('connection', function (socket) {
     socket.on('Login.auth', onLogin);
     
     socket.on('error', function(e) {
+        console.log('Error while handling connection:\n' + e.stack);
         socket.emit('Toast.show', {
             message: 'ServerSideException',
             type: 'error',

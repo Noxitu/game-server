@@ -52,5 +52,5 @@ main#game {
 }
 
 [data-turn][data-color="0"][data-bind="DotsAndBoxes.board"] .dash[data-owner="-1"]:hover {
-  background: rgba(0,200,255,0.3);
+  background: rgba(0,150,225,0.3);
 }
