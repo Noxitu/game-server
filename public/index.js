@@ -131,15 +131,14 @@ var Login = {
 
 var Room = {
     clear: function() {
-        Title.clear();
-        $('main:visible').hide();
+        $('main:visible').addClass('hidden-main');
     },
     set: function(id) {
         if( $('main#'+id).is(':visible') )
             return;
             
         Room.clear();
-        $('main#'+id).show();
+        $('main#'+id).removeClass('hidden-main');
     },
     get: function() {
         return $('main:visible').attr('id');
@@ -164,6 +163,7 @@ var Room = {
             socket.emit('Room.join', {});
     },
     load: function(data) {
+        Title.clear();
         Room.set('loading');
         
         if( Room.currentHandler ) {
@@ -214,7 +214,6 @@ var Room = {
 
 var Index = {
     appendSelect: function(element, name, label, values, labels) {
-        console.log(labels);
         var div_e = $('<div class="input-field"></div>');
         var select_e = $('<select name="'+name+'"></select>');
         for( var j = 0; j < values.length; j++ )

@@ -32,6 +32,9 @@ a {
   display: none;
 }
 
+main.hidden-main {
+  display: none !important;
+}
 
 
 [data-require-autoplay][data-no-autoplay],

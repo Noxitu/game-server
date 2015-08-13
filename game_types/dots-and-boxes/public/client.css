@@ -1,0 +1,56 @@
+main#game {
+  display: flex;
+  flex-direction: column;
+}
+
+[data-bind="DotsAndBoxes.board"] {
+  white-space: nowrap;
+  flex: 1 0 0;
+  overflow: auto;
+}
+
+[data-bind="DotsAndBoxes.board"] div {
+  vertical-align: middle;
+  line-height: 0;
+}
+
+[data-bind="DotsAndBoxes.board"] div div {
+  display: inline-block;
+  border-radius: 10px;
+  width: 20px;
+  height: 20px;
+  margin: 4px 2px;
+}
+
+[data-bind="DotsAndBoxes.board"] .dot {
+  background: black;
+}
+
+[data-bind="DotsAndBoxes.board"] .dash-row .dash {
+  margin: 6px 4px;
+  width: 10vmin;
+  height: 12px;
+}
+
+[data-bind="DotsAndBoxes.board"] .box-row .dash {
+  margin: 2px 8px;
+  height: 10vmin;
+  width: 12px;
+}
+
+[data-bind="DotsAndBoxes.board"] .box {
+  height: 10vmin;
+  width: 10vmin;
+}
+
+[data-turn][data-bind="DotsAndBoxes.board"] .dash[data-owner="-1"] {
+  cursor: pointer;
+}
+
+[data-turn][data-color="1"][data-bind="DotsAndBoxes.board"] .dash[data-owner="-1"]:hover {
+  background: rgba(255,0,0,0.3);
+}
+
+[data-turn][data-color="0"][data-bind="DotsAndBoxes.board"] .dash[data-owner="-1"]:hover {
+  background: rgba(0,200,255,0.3);
+}
