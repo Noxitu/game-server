@@ -48,7 +48,7 @@ main#game {
 }
 
 [data-turn][data-color="1"][data-bind="DotsAndBoxes.board"] .dash[data-owner="-1"]:hover {
-  background: rgba(255,0,0,0.3);
+  background: rgba(255,200,50,0.3);
 }
 
 [data-turn][data-color="0"][data-bind="DotsAndBoxes.board"] .dash[data-owner="-1"]:hover {
