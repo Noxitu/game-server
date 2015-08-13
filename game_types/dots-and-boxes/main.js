@@ -87,7 +87,7 @@ function Connection(socket, user, game) {
             value: player_i
         });
         game.logic.scores[player_i]++;
-        socket.emit('DotsAndBoxes.scores', game.logic.scores );
+        io.to(game_room).emit('DotsAndBoxes.scores', game.logic.scores );
         
         return true;
     }
