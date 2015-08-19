@@ -1,0 +1,12 @@
+
+main#game table {
+  table-layout: fixed;
+}
+
+main#game table th, main#game table td {
+  padding: 1px 10px;
+}
+
+main#game th, main#game td {
+  text-align: center;
+}
