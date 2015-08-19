@@ -1,0 +1,24 @@
+<_50Stones_title "50 Kamieni">
+<_50Stones_settings_wins "Do ilu wygranych">
+<_50Stones_settings_stones "Ile kamieni">
+<_50Stones_pick_btn "Zagraj kamienie">
+
+<macro50Stones_plural($n) {
+  $n == 0 ? "zero" : 
+  $n == 1 ? "one" : 
+  $n%10>=2 && $n%10<=4 && ($n%100<10 || $n%100>=20) ? "some" : "many" }>
+  
+<_50Stones_stones[macro50Stones_plural($stones)] {
+  zero: "0 kamieni",
+  one: "1 kamień",
+  some: "{{ $stones }} kamienie",
+  many: "{{ $stones }} kamieni"
+}>
+  
+<_50Stones_pick_feedback[macro50Stones_plural($stones)] {
+  zero: "Nie zagrałeś żadnego kamienia",
+  one: "Zagrałeś jeden kamień",
+  some: "Zagrałeś {{ $stones }} kamienie",
+  many: "Zagrałeś {{ $stones }} kamieni"
+}>
+

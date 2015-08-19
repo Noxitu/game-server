@@ -2,7 +2,7 @@
 var io = require('../../server.js').io;
 
 var info = {
-    l20n_prefix: "50Stones",
+    l20n_prefix: "_50Stones",
     logo: "logo.jpg",
     players: [2,3,4,5,6,7,8],
     settings: [
@@ -20,7 +20,7 @@ var info = {
 }
 
 function Logic(game) {
-    this.stones = game.players.map( function(e) { return game.settings.stones; } );
+    this.stones = game.players.map( function(e) { return game.settings.stones|0; } );
     this.picks = game.players.map( function(e) { return null; } );
     this.scores = game.players.map( function(e) { return 0; } );
     this.history = [];
@@ -68,13 +68,17 @@ function Connection(socket, user, game) {
                 return;
                 
             game.logic.picks[player_i] = pick;
+            io.to(player_room).emit('50Stones.pick', game.logic.picks[player_i] );
             
             if( game.logic.picks.indexOf(null) != -1 ) {
                 return;
             }
             
-            for( var i = 0; i < game.logic.picks.length; i++ )
+            for( var i = 0; i < game.logic.picks.length; i++ ) {
                 game.logic.stones[i] -= game.logic.picks[i];
+                if( game.logic.stones[i] == 0 )
+                    io.to(game_room+':player:' + i).emit('50Stones.cantPlay');
+            }
             
             io.to(game_room).emit('50Stones.picks', game.logic.picks );
             var winner = game.logic.winner();
@@ -85,7 +89,7 @@ function Connection(socket, user, game) {
             io.to(game_room).emit('50Stones.stones', game.logic.stones );
             
             game.logic.history.push( game.logic.picks );
-            game.logic.picks = game.players.map( function(e) { return null; } );
+            game.logic.picks = game.logic.stones.map( function(s) { return s == 0 ? 0 : null; } );
             
             if( game.logic.ended(game.settings.wins) ) {
                 io.to(game_room).emit('50Stones.end', 'now');

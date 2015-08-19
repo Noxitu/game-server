@@ -1,3 +1,21 @@
-<50Stones_title "50 Stones">
-<50Stones_settings_wins "How many wins">
-<50Stones_settings_stones "How many stones">
+<_50Stones_title "50 Stones">
+<_50Stones_settings_wins "How many wins">
+<_50Stones_settings_stones "How many stones">
+<_50Stones_pick_btn "Place stones">
+
+<macro50Stones_plural($n) {
+  $n == 0 ? "zero" : 
+  $n == 1 ? "one" : "many" }>
+  
+<_50Stones_stones[macro50Stones_plural($stones)] {
+  zero: "0 stones",
+  one: "1 stone",
+  many: "{{ $stones }} stones"
+}>
+  
+<_50Stones_pick_feedback[macro50Stones_plural($stones)] {
+  zero: "You have placed no stones",
+  one: "You have placed one stone",
+  many: "You have placed {{ $stones }} stones"
+}>
+

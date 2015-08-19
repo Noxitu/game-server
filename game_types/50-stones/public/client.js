@@ -4,7 +4,6 @@ var _50Stones = {
         Title.clear('*');
         var pick = $(this).find('input[name="pick"]').val();
         socket.emit('50Stones.pick', pick );
-        _50Stones.events['50Stones.pick'](pick);
         _50Stones.idleSince = new Date().getTime();
         return false;
     },
@@ -30,7 +29,7 @@ var _50Stones = {
         '50Stones.pick': function(pick) {
             $('main#game [data-50stones-inputs] input').val(pick).hide();
             $('main#game [data-50stones-inputs] a').hide();
-            $('main#game [data-50stones-inputs] h1').show().text(pick);
+            $('main#game [data-50stones-inputs] h3').show().text( document.l10n.getEntitySync('_50Stones_pick_feedback', {stones: pick} ).value );
         },
         '50Stones.scores': function(scores) {
             var e = $('main#game [data-bind="score"]')
@@ -39,8 +38,9 @@ var _50Stones = {
         },
         '50Stones.stones': function(stones) {
             var e = $('main#game [data-bind="stones"]')
-            for( var i = 0; i < stones.length; i++ )
-                e.eq(i).text(stones[i]);
+            for( var i = 0; i < stones.length; i++ ) {
+                e.eq(i).text(document.l10n.getEntitySync('_50Stones_stones', {stones: stones[i]} ).value);
+            }
         },
         '50Stones.picks': function(picks) {
             var tr = $('<tr></tr>');
@@ -61,7 +61,7 @@ var _50Stones = {
                 Title.add('*');
                 $('main#game [data-50stones-inputs] input').show();
                 $('main#game [data-50stones-inputs] a').show();
-                $('main#game [data-50stones-inputs] h1').hide();
+                $('main#game [data-50stones-inputs] h3').hide();
                 if( Focus.state == 'off' || _50Stones.idleSince + 20000 < new Date().getTime() )
                     Audio.notify();
             }

@@ -177,6 +177,7 @@ var Room = {
                     html = html.replace(/([^\\])~/g, '$1/game_types/'+data.type);
                     html = html.replace('\\~', '~');
                     $('main#game').html(html);
+                    document.l10n.localizeNode( $('main#game')[0] );
                 });
                 Room.currentHandler = Game;
                 addListeners(Room.currentHandler.events);
